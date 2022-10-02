@@ -1,0 +1,12 @@
+Cas N = 100000 itérations
+
+3.32e-06 s flag "-O0" seul
+
+3.71e-06 s flag "-O1" seul 
+
+3.30e-06 s flag "-O2" seul
+
+3.52e-06 s flag "-O3" seul
+
+
+

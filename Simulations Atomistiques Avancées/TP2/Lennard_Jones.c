@@ -6,7 +6,6 @@
 const double Rc = 2.5; // Le rayon de troncature 
 double epsilon = 1.;
 double mass = 1.;
-int N = 10000000;
 
 
 void interactions(double x1, double y1, double x2, double y2, double &u12, double &f12x, double &f12y)
@@ -45,6 +44,7 @@ void interactions(double x1, double y1, double x2, double y2, double &u12, doubl
 
 int main( int argc, char *argv[] )  
 {
+	int N = 100000;
 	clock_t start, end;
 	double t;
 
@@ -57,13 +57,14 @@ int main( int argc, char *argv[] )
 	for (int i = 0; i < N; i++)
 	{ 
 		interactions(x1, y1, x2, y2, u12, f12x, f12y);
+		printf("\ni = %d\n", i); 
 	}
 	
 	end = clock(); // fin enregistrement
 	   
 	t = ((double) end - start) / CLOCKS_PER_SEC; // Calcul du temps de calcul total
    
-	printf("temps de calcul : %e s\n", t/float(N));
+	printf("\ntemps de calcul : %e s\n", t/N);
    
 	return 0;
 }
