@@ -2,6 +2,7 @@
 #include <time.h>
 
 int main() {
+
     clock_t start, end;
     float t;
 
@@ -27,7 +28,7 @@ int main() {
     
     t = ((double) end - start) / CLOCKS_PER_SEC;
     
-    printf("%d, t_1 = %e", b[0], t/niter);
+    printf("\n%d, t_1 = %e\n\n", b[0], t/niter);
    return 0;
 }
 

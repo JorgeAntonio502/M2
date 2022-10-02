@@ -6,7 +6,7 @@ int main() {
   clock_t start, end;
   double t;
 
-  const int N=10000;
+  const int N=100000;
   
   const int dim=100;
   double a [dim][dim];
@@ -28,6 +28,6 @@ int main() {
   
   t = ((double) end - start) / CLOCKS_PER_SEC;
 
-  printf("a[0] = %lf, t_1 = %e s ",a[0][0], t/N);
+  printf("\na[0] = %lf, t_1 = %e s \n\n",a[0][0], t/N);
   return 0;
 }
