@@ -1,0 +1,41 @@
+Cas des nombres réels : N = 2e9 opérations entre deux nombres à virgule 2.2 et 8.5
+
+Multiplication : (real, user)
+-O0 : (4.406 s, 4.404 s) (4.314 s, 4.136 s) (4.339 s, 4.336 s) (4.329 s, 4.328 s) (4.365 s, 4.360 s) (4.389 s, 4.388 s) 
+-O1 : (0.649 s, 0.644 s) (0.657 s, 0.656 s) (0.662 s, 0.660 s) (0.669 s, 0.672 s) (0.666 s, 0.664 s) (0.660 s, 0.656 s)
+-O2 : (0.002 s, 0.000 s) invariant par compilation successives
+-O3 : (0,002 s, 0.000 s) invariant par compilation successives
+
+Addition : (real, user)
+-O0 : (4.322 s, 4.320 s) (4.361 s, 4.360 s) (4.377 s, 4.376 s) (4.360 s, 4.360 s) (4.393 s, 4.392 s) (4.338 s, 4.336 s)
+-O1 : (0.658 s, 0.656 s) (0.657 s, 0.656 s) (0.660 s, 0.660 s) (0.649 s, 0.648 s) (0.664 s, 0.664 s) (0.662 s, 0.660 s)
+-O2 : (0.002 s, 0.000 s) invariant par compilation successives
+-O3 : (0,002 s, 0.000 s) invariant par compilation successives
+
+Division : (real, user)
+-O0 : (4.334 s, 4.332 s) (4.384 s, 4.380 s) (4.384 s, 4.380 s) (4.450 s, 4.448 s) (4.413 s, 4.412 s) (4.408 s, 4.408 s)
+-O1 : (0.660 s, 0.660 s) (0.659 s, 0.656 s) (0.666 s, 0.664 s) (0.671 s, 0.672 s) (0.665 s, 0.664 s) (0.666 s, 0.664 s)
+-O2 : (0.002 s, 0.000 s) invariant par compilation successives
+-O3 : (0,002 s, 0.000 s) invariant par compilation successives
+
+Faire moyenne des temps user et comparer avec les temps du TP1 (Graphes (t_user, On) ?)
+
+
+
+
+Cas des flags -ffast-math (sensé améliorer la performance des oparations entre réels:
+
+Multiplication avec -O0:
+
+(4.353 s, 4.352 s) (4.374 s, 4.372 s) (4.347 s, 4.344 s) (4.349 s, 4.344 s) (4.388 s, 4.384 s) (4.392 s, 4.388 s)
+
+Addition avec -O0:
+
+(4.364 s, 4.360 s) (4.359 s, 4.356 s) (4.349 s, 4.352 s) (4.361 s, 4.360 s) (4.358 s, 4.356 s) (4.384 s, 4.380 s)
+
+Division avec -O0:
+
+(4.377 s, 4.376 s) (4.404 s, 4.400 s) (4.407 s, 4.404 s) (4.399 s, 4.396 s) (4.415 s, 4.412 s) (4.390 s, 4.388 s)
+
+Faire la moyenne des temps user pour chaque opération puis comparer aux temps user moyens
+de la section précédente pour O0.

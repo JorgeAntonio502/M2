@@ -1,0 +1,58 @@
+Position initiale de la particule numero : 0
+6.000000
+15.000000
+
+
+Position initiale de la particule numero : 1
+7.000000
+3.000000
+
+
+Position initiale de la particule numero : 2
+15.000000
+30.000000
+
+
+Position initiale de la particule numero : 3
+3.000000
+6.000000
+
+
+Position initiale de la particule numero : 4
+30.000000
+10.000000
+
+
+
+
+
+
+Vitesse initiale de la particule numero : 0
+7.000000
+11.000000
+
+
+Vitesse initiale de la particule numero : 1
+9.000000
+-16.000000
+
+
+Vitesse initiale de la particule numero : 2
+38.000000
+31.000000
+
+
+Vitesse initiale de la particule numero : 3
+19.000000
+-37.000000
+
+
+Vitesse initiale de la particule numero : 4
+9.000000
+-23.000000
+
+
+
+E_0 = 2625.999756
+
+t_ref = 0.19
