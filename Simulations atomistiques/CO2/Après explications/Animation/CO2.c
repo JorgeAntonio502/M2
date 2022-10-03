@@ -32,12 +32,12 @@ int main()
     int L = 50; // taille de la boîte (carrée)
     float mass = 1.; // masse des particules
 	
-    float dt = 0.001; //* sqrt(sigma*sigma*mass/epsilon);
+    float dt = 0.002; //* sqrt(sigma*sigma*mass/epsilon);
     float E_0 = 0.; // L'énergie totale théorique
     float E_N = 0.; // Energie dy système à l'itération N
     	
-    float x[n][D];  // positions
-    float v[n][D];  // vitesses
+    float x[n][D] = {{24., 34.}, {5., 48.}, {36., 49.}, {8., 29.}, {10., 13.}};  // positions
+    float v[n][D] = {{-6., 15.}, {43., -15.}, {13., 33.}, {22., -34.}, {-22., -5.}};  // vitesses
 
     // Initialisation du générateur aléatoire de nombre
 
@@ -45,6 +45,7 @@ int main()
     srand((unsigned) time(&t));
 
     // Creation des positions initiales de chaque particule
+    /*
     FILE *fpv;
     fpv = fopen("Situation_initiale.txt", "w");
 
@@ -94,7 +95,7 @@ int main()
         }
         fprintf(fpv, "\n\n");
     }
-    
+    */
     
     
     //calcul de l'énergie initiale E_0
@@ -132,9 +133,9 @@ int main()
             E_0 += mass*vit_i*vit_i/2.;
     }
     printf("\nE_0 = %f\n", E_0);
-    fprintf(fpv, "\nE_0 = %f\n", E_0);
+    //fprintf(fpv, "\nE_0 = %f\n", E_0);
     
-    fclose(fpv);
+    //fclose(fpv);
     
     
     // initialisation ouverture fichiers

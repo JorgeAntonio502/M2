@@ -26,28 +26,28 @@ float Lennard_Jones(float r, float L)
 
 int main()
 {
-    int n = 10; // Nombre de particules
+    int n = 5; // Nombre de particules
     int D = 2; // Dimension du problème
     int N;  // Nombre itérations
     int L = 50; // taille de la boîte (carrée)
     float mass = 1.; // masse des particules
-    float t_ref = 0.05; // temps de référence
+    float t_ref = 0.408; // temps de référence
 	
-    float dt = 0.000001; //* sqrt(sigma*sigma*mass/epsilon);
+    float dt = 0.003; //* sqrt(sigma*sigma*mass/epsilon);
     float E_0 = 0.; // L'énergie totale théorique
     float E_N = 0.; // Energie dy système à l'itération N
     	
     float x[n][D];  // positions
     float v[n][D];  // vitesses
-    float x_init[n][D];
-    float v_init[n][D];
+    float x_init[n][D] = {{24., 34.}, {5., 48.}, {36., 49.}, {8., 29.}, {10., 13.}};
+    float v_init[n][D] = {{-6., 15.}, {43., -15.}, {13., 33.}, {22., -34.}, {-22., -5.}};
 
     // Initialisation du générateur aléatoire de nombre
 
     time_t t;
     srand((unsigned) time(&t));
 
-    // Creation des positions initiales de chaque particule
+    // Creation des positions initiales
 
     printf("Positions initiales\n");
 
@@ -55,10 +55,9 @@ int main()
     {
         for(int j = 0; j < D; j++)
         {
-            x_init[i][j] = (float) (rand() % L);
             x[i][j] = x_init[i][j];
             
-            printf("%f\n", x_init[i][j]);
+            printf("%f\n", x[i][j]);
             printf("\n");
         }
     }
@@ -72,23 +71,12 @@ int main()
     {
         for(int j = 0; j < D; j++)
         {
-            v[i][j] = (float) (rand() % L); // norme de la composante
+            v[i][j] = v_init[i][j];
             
-            float sign = rand()%2; // signe de la composante
-            if (sign == 0)
-            {
-            	v[i][j] = -v[i][j];
-            }
-            
-            v_init[i][j] = v[i][j];
-            
-            
-            printf("%f\n", v_init[i][j]);
+            printf("%f\n", v[i][j]);
             printf("\n");
         }
     }
-    
-    
     
     //calcul de l'énergie initiale E_0
     float vit_i = 0.;
@@ -141,7 +129,7 @@ int main()
     printf("\n");
     
     
-    while ((dt < t_ref)) // boucle sur dt 
+    while ((dt > 0.001)) // boucle sur dt 
     {
     
 	    N = t_ref/dt; // Nombre d'itérations pour arriver à t_ref
@@ -233,7 +221,7 @@ int main()
 	    printf("%f\t%f\n\n", dt, fabs(E_N-E_0));
 	    fprintf(fptr, "%f\t%f\n\n", logf(dt), logf(fabs(E_N-E_0)));	
 	   
-	    dt = dt*10.; // on augmente dt
+	    dt -= 0.0001 ; // on diminue dt
     
     }
 	
