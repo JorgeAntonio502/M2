@@ -26,38 +26,54 @@ class Point:
 
         
 """
-class PointA(Point):
-    
+class Point:
     def __init__(self, x, y):
-        super().__init__(x, y)
-        
+        self.__x = x
+        self.__y = y
+
     def affiche(self):
-        print("x = ", self.get_x(), " y = ", self.get_y())
-        
+        print("Coordonnees : ", self.__x, self.__y)
         
 class PointNom(Point):
     def __init__(self, x, y, nom):
-        super().__init__(x, y)
-        self.nom = nom
+        Point.__init__(self, x, y)
+        self.__nom = nom
         
     def aff_coord_nom(self):
-        print("Coordonnees : ", self.get_x(), self.get_y(), " | nom objet : ", self.nom)
+        Point.aff_coord(self)
+        print("Nom : ", nom)
         
-        
-P1 = PointA(7, 6)
-P1.affiche()
+       
+a = PointNom(3, 5, "A")
+a.aff_coord()
+a.aff_coord_nom()
+"""    
 
-P2 = PointNom(5, 1, "A")
-P2.aff_coord_nom()
-
-print("\n")
-
-liste = [Point(5, 5), Point(0, -8), PointNom(2, 5, "A")]
-
-for point in liste:
-    print(point.aff_coord())
-    
 """
+class Point:
+    def __init__(self, x, y):
+        self.__x = x
+        self.__y = y
+
+    def affiche(self):
+        print("Coordonnees : ", self.__x, self.__y)
+        
+class PointNom(Point):
+    def __init__(self, x, y, nom):
+        Point.__init__(self, x, y)
+        self.__nom = nom
+        
+    def affiche(self):
+        Point.affiche(self)
+        print("  et son nom est : ", self.__nom)
+        
+       
+liste = [PointNom(3, 5, "A"), Point(6, 7), PointNom(2, 8, "B")]
+
+for a in liste:
+    a.affiche()
+""" 
+
 
 a = Point("A", 3)
 a.affiche()
