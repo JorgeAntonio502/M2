@@ -9,53 +9,63 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+# Constantes
 lambda_0 = 1.55e-6
 Nlambda = 20
+c = 2.99792458e8    
 
-n_air = 1
+# Limites du graphe selon x
+xmin = 0
+xmax = 1000*lambda_0
+# Limites selon y
+ymin = -5
+ymax = 5
+
+# Carractéristiques du milieu transparent
 n_milieu = 1.45
+eps_milieu = n_milieu**2
+lim_min = 600*lambda_0
+lim_max = 800*lambda_0
 
-eps_r1 = n_air**2
-eps_r2 = n_milieu**2
 
 nbx = 200
 nbt = 300
 
-c = 2.99792458e8    # vitesse lumière
-
-dx = lambda_0/Nlambda # pas temporel
-
+# Pas temporels et d'espace
+dx = lambda_0/Nlambda 
 S = 1 # facteur de stabilité numérique, stable si < 1 seulement
-# Ici, S doit être 1 et que de l'air entoure le milieu transparent 
-
 dt = (dx * S) / c
-
-
-
 T = lambda_0/c
 
-xmin = 0
-xmax = 20*lambda_0
 
 x = np.linspace(xmin, xmax, nbx) # liste des valeurs selon x
 
-eps_r = np.ones(nbx) # tableau contenat les valeurs de eps_r pour les différents x
+
+eps_r = np.ones(nbx) # tableau contenant les valeurs de eps_r pour les différents x
 for i in range(nbx):
-    if x[i] > 12*lambda_0 and x[i] < 17*lambda_0 :
-        eps_r[i] = 1.45**2 # indice de réfraction au carré
+    if x[i] > lim_min and x[i] < lim_max :
+        eps_r[i] = eps_milieu
+        
 
 unm = np.zeros(nbx) # liste des positions à t-1
 un = np.zeros(nbx) # liste des positions à t
 unp = np.zeros(nbx) # liste des positions à t+1
 
+
 fig = plt.figure() # initialise la figure
 line, = plt.plot([], [])  # plt() renvoie une LISTE des courbes tracées
                           # la virgule récupère la référence à l'objet de la liste
 
-                         
-                          
+
+# Creation limites visuelles du milieu
+plt.vlines(lim_min, ymin, ymax, linestyles ="dashed", colors ="k")    
+plt.vlines(lim_max, ymin, ymax, linestyles ="dashed", colors ="k")
+
+
+# Limites d'abscisses et l'ordonnées
 plt.xlim(xmin, xmax)
-plt.ylim(-2, 2)
+plt.ylim(ymin, ymax)
+
                           
 def animate(n):
     
@@ -82,7 +92,7 @@ def animate(n):
     return line,
 
 ani = animation.FuncAnimation(fig, func = animate,
-                              interval=5, blit=True, repeat=False)
+                              interval=30, blit=True, repeat=False)
 
 plt.show()
 
