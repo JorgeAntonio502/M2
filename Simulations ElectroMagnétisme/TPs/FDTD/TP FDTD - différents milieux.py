@@ -10,22 +10,31 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 # Constantes
-lambda_0 = 1.55e-6
+lambda_0 = 1.55e-6 # Longueur "Telecom" utilisée dans opto-électronique
 Nlambda = 20
 c = 2.99792458e8    
 
 # Limites du graphe selon x
 xmin = 0
-xmax = 1000*lambda_0
+xmax = 100*lambda_0
 # Limites selon y
-ymin = -5
-ymax = 5
+ymin = -1
+ymax = 1
 
 # Carractéristiques du milieu transparent
 n_milieu = 1.45
 eps_milieu = n_milieu**2
-lim_min = 600*lambda_0
-lim_max = 800*lambda_0
+lim_min = 50*lambda_0
+lim_max = 70*lambda_0
+
+# Coefficients de Fresnel
+r = (1 - n_milieu)/(1 + n_milieu) # Négatif si les max deviennent des min
+t = 2*1 / 1 + n_milieu
+print("Interface air/milieu : r = ", r, " t = ", t)
+
+r = (n_milieu -1)/(1 + n_milieu)
+t = 2 * n_milieu / (1 + n_milieu)
+print("Interface milieu/air : r = ", r, " t = ", t)
 
 
 nbx = 200
@@ -43,7 +52,7 @@ x = np.linspace(xmin, xmax, nbx) # liste des valeurs selon x
 
 eps_r = np.ones(nbx) # tableau contenant les valeurs de eps_r pour les différents x
 for i in range(nbx):
-    if x[i] > lim_min and x[i] < lim_max :
+    if x[i] > lim_min and x[i] < lim_max  :
         eps_r[i] = eps_milieu
         
 
@@ -69,7 +78,7 @@ plt.ylim(ymin, ymax)
                           
 def animate(n):
     
-    # Applicatin du schéma numérique
+    # Application du schéma numérique
     for i in range(1, nbx-1):
         unp[i] = S**2/eps_r[i] * (un[i+1] - 2*un[i] + un[i-1]) + 2*un[i] - unm[i] # Calcul de la valeur à la position i à t+1
     
@@ -92,37 +101,6 @@ def animate(n):
     return line,
 
 ani = animation.FuncAnimation(fig, func = animate,
-                              interval=30, blit=True, repeat=False)
+                              interval=20, blit=True, repeat=False)
 
 plt.show()
-
-"""
-# Correction :
-    
-c = ...
-lambda0 = 1.55e-6
-
-xmin = 0
-xmax = 10*lambda0
-
-N_lambda = 20
-dx = lambda0 / N_lambda
-
-nbx = int ((xman-xmin)/dx) + 1
-
-dt = S * dx / c
-
-T = lambda0 / c
-
-unm = np.zeros(nbx) 
-un = np.zeros(nbx) # Identique à E(x, t)
-unp = np.zeros(nbx) 
-
-# dans animation() :
-    
-    tnp = (n+1) * dt
-    unp[0] = formule...
-    
-    
-"""
-
