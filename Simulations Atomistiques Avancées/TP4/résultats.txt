@@ -1,0 +1,39 @@
+On utilise gcc dans tous les cas
+
+# Exo vectorisation : boucles
+
+- Pour appel avec "-O3 -fopt-info-vec -fopt-info-vec-missed" ("-O2" ne fonctionne pas)
+
+loop #0 l.23 : vectorisée, régistre vectoriel : 16 bytes vector
+loop #1 l.27 : vectorisée, régistre vectoriel : 16 bytes vector
+loop #2 l.34 : non vectorisée car mauvaise interdépendance des données
+loop #3 l.38 : Pas d'information, mais non à cause de l'appel de fonction
+loop #4 l.42 : non vectorisée car "control flow in loop"
+loop #5 l.48 : vectorisée, régistre vectoriel : 16 bytes vector
+loop #6 l.52 : vectorisée, régistre vectoriel : 16 bytes vector
+loop #7 l.57 : Non vectorisée "not suitable for gather load _17 = *x.1_40[_16];"
+
+
+- Pour appel avec les flags "-O1 -ftree-vectorize -mtune=native -fopt-info-vec-missed"
+
+Donne les informations sur les boucles non vectorisées seulement. En accord avec autres flags.
+
+
+- Pour appel avec les flags "-O1 -ftree-vectorize -mtune=native -fopt-info-vec"
+
+Donne les informations sur les boucles vectorisées seulement. En accord avec autres flags.
+
+
+
+
+
+
+# Exo vectorisation : Ré-indexation
+
+- Avant modifications : 
+Loop d'initialisation de l'array : optimisée, régistre : 16 bytes vector
+Loop de calcul de la somme : non vectorisée, "relevant stmt not supported"
+
+- Après vectorisation :
+
+

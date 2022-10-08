@@ -1,0 +1,55 @@
+clear the command line : clc
+ne pas montrer le résultat de la commande : ;
+
+- Fonctions mathématiques :
+ceil()
+floor()
+round()
+max(x)
+min(x)
+
+- opérateur puissance : ** ou ^
+
+- opérations élément par élément : .+, .-, .*, .*, .^
+
+
+- Vecteurs :
+ligne : v = [1 2 3 4]
+colonne : v = [1; 2; 3; 4]
+
+
+- Matrices
+m = [1 2; 3 4]
+ones(n, m) : matrice de taille n par m avec des 0
+zeros(n, m)
+eye(n) ou Eye (n, m) :  Générer la matrice identité
+rand(n, m) : Générer une matrice n par m avec des élément aléatoires entre 0 et 1
+randn(n, m) : éléments aléatoires normalement distribués
+
+Concaténation : 
+c = [a b] : place b à côté de a
+c = [a ; b] : place b à la suite de a
+
+Obtenir les dimensions :
+size(m) : retourne un vecteur avec les dimensions de la matrice
+length(m) : retourne la valeur de la plus grande dimension
+
+- opérateur colonne :
+"S = 1:5" donne le vecteur [1 2 3 4 5]
+"S = n:k:1m" donne un vecteur allant de n à m par pas de k
+
+Indexation :
+m = [1 2; 3 4]
+m(1, 1) donne 1
+m(1,:) donne [1 2]
+
+
+- Fichiers de données :
+
+load <nomFichier> : crée une variable du même nom que le fichier contenant les données lues
+var = load("<nomFichier>") : crée une variable var contenant les données du fichier lu
+save nomFichier var : enregistrer les données de var dans un fichier nommé "nomFichier"
+
+f = tmpfile : crée un fichier TEMPORAIRE effacé quand Octave est fermé
+save f var : enregistrer les données dans var dans le fichier temporaire f
+
