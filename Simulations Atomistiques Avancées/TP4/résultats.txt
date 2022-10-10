@@ -34,6 +34,17 @@ Donne les informations sur les boucles vectorisées seulement. En accord avec au
 Loop d'initialisation de l'array : optimisée, régistre : 16 bytes vector
 Loop de calcul de la somme : non vectorisée, "relevant stmt not supported"
 
+N = 1000 exécutions des boucles permettant de calculer la somme S.
+
+t_1 (s)  = {1.974e-04, 2.312e-04, 1.870e-04} => t_1 = 2.052e-04 s
+
 - Après vectorisation :
+On ajoute un tableau permettant de calculer la partie dépendante de l'indice i dans la boucle calculant la somme et empêchant la vectorisation. Aisni, on obtient trois boucles vectorisables.
+
+t_1 (s) = {2.204e-04, 2.061e-04, 2.211e-04} => t_1 = 2.159e-04 s
+
+
+
+# Exo parallélisation
 
 

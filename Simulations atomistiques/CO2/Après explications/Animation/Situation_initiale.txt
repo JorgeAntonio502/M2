@@ -1,26 +1,51 @@
 Position initiale de la particule numero : 0
-24.000000
-34.000000
+7.000000
+43.000000
 
 
 Position initiale de la particule numero : 1
-5.000000
-48.000000
+25.000000
+41.000000
 
 
 Position initiale de la particule numero : 2
-36.000000
-49.000000
+48.000000
+9.000000
 
 
 Position initiale de la particule numero : 3
-8.000000
-29.000000
+27.000000
+46.000000
 
 
 Position initiale de la particule numero : 4
-10.000000
-13.000000
+40.000000
+5.000000
+
+
+Position initiale de la particule numero : 5
+44.000000
+44.000000
+
+
+Position initiale de la particule numero : 6
+19.000000
+0.000000
+
+
+Position initiale de la particule numero : 7
+15.000000
+29.000000
+
+
+Position initiale de la particule numero : 8
+48.000000
+0.000000
+
+
+Position initiale de la particule numero : 9
+11.000000
+25.000000
 
 
 
@@ -28,29 +53,54 @@ Position initiale de la particule numero : 4
 
 
 Vitesse initiale de la particule numero : 0
--6.000000
-15.000000
+-721.789673
+-411.836090
 
 
 Vitesse initiale de la particule numero : 1
-43.000000
--15.000000
+-813.028503
+-623.172485
 
 
 Vitesse initiale de la particule numero : 2
-13.000000
-33.000000
+813.028503
+458.061615
 
 
 Vitesse initiale de la particule numero : 3
-22.000000
--34.000000
+-848.127869
+-623.172485
 
 
 Vitesse initiale de la particule numero : 4
--22.000000
--5.000000
+-839.726746
+813.028503
+
+
+Vitesse initiale de la particule numero : 5
+53.677685
+-502.479370
+
+
+Vitesse initiale de la particule numero : 6
+-458.061462
+53.677654
+
+
+Vitesse initiale de la particule numero : 7
+839.726685
+-721.789673
+
+
+Vitesse initiale de la particule numero : 8
+691.603333
+794.836853
+
+
+Vitesse initiale de la particule numero : 9
+-544.913940
+107.143463
 
 
 
-E_0 = 2871.000000
+E_0 = 4098643.250000

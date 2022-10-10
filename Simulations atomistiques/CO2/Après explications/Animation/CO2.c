@@ -5,15 +5,21 @@
 
 float epsilon = 1.;
 float sigma = 1.;
+float N_Avogadro = 6.02214076e23;
+int n = 5; // Nombre de particules
+float mass = 1.; // masse des particules (g)
+float T = 293.; // Température en Kelvins
+float R = 8314.; // g.m2.s-2.mol-1.K-1 (fois 1000 pour avoir des grammes comme la masse des particules)
 
 float Lennard_Jones(float r, float L)
 {
-    float Rc = L/2.; 
-    //printf("Rc = %f, r = %f\n", Rc, r);
+    float Rc = 2.56;  // Rayon de troncature (2.56 ?)
+    float rho = n*mass/L*L*L; // Densité moyenne
     
     if (r <= Rc)
     {
-    	return 4.*epsilon*(pow(sigma/r, 12) - pow(sigma/r, 6) - pow(sigma/Rc, 12) + pow(sigma/Rc, 6));
+    	float u_tail = (8/3)*M_PI*epsilon*rho*sigma*sigma*sigma*( (pow(sigma/Rc, 9)/3) - pow(sigma/Rc, 3) );
+    	return 4.*epsilon*(pow(sigma/r, 12) - pow(sigma/r, 6) - pow(sigma/Rc, 12) + pow(sigma/Rc, 6)) + n*u_tail; // potentiel tronqué + correction de queue
     }
     else
     {
@@ -26,18 +32,22 @@ float Lennard_Jones(float r, float L)
 
 int main()
 {
-    int n = 5; // Nombre de particules
     int D = 2; // Dimension du problème
     int N = 500;  // Nombre itérations
     int L = 50; // taille de la boîte (carrée)
-    float mass = 1.; // masse des particules
-	
-    float dt = 0.002; //* sqrt(sigma*sigma*mass/epsilon);
+    float V = L*L*L;
+    
+    float n_gaz = n/V; // Quantité de matière (mol)
+    float M_molarMass = n*mass;//n*mass/n_gaz; // Masse molaire (g.mol-1)
+    float v_rms = sqrt(3*R*T/M_molarMass); // vitesse moyenne des particules du gaz
+    printf("Root Mean Square velocity : %f m/s\n\n", v_rms);
+    	
+    float dt = 0.0001; //* sqrt(sigma*sigma*mass/epsilon);
     float E_0 = 0.; // L'énergie totale théorique
     float E_N = 0.; // Energie dy système à l'itération N
     	
-    float x[n][D] = {{24., 34.}, {5., 48.}, {36., 49.}, {8., 29.}, {10., 13.}};  // positions
-    float v[n][D] = {{-6., 15.}, {43., -15.}, {13., 33.}, {22., -34.}, {-22., -5.}};  // vitesses
+    float x[n][D]; //= {{24., 34.}, {5., 48.}, {36., 49.}, {8., 29.}, {10., 13.}};  // positions
+    float v[n][D]; //= {{-6., 15.}, {43., -15.}, {13., 33.}, {22., -34.}, {-22., -5.}};  // vitesses
 
     // Initialisation du générateur aléatoire de nombre
 
@@ -45,7 +55,7 @@ int main()
     srand((unsigned) time(&t));
 
     // Creation des positions initiales de chaque particule
-    /*
+    
     FILE *fpv;
     fpv = fopen("Situation_initiale.txt", "w");
 
@@ -63,8 +73,8 @@ int main()
         {
             x[i][j] = (float) (rand() % L);
             fprintf(fpv, "%f\n", x[i][j]);
-            printf("%f\n", x[i][j]);
-            printf("\n");
+            //printf("%f\n", x[i][j]);
+            //printf("\n");
         }
         fprintf(fpv, "\n\n");
     }
@@ -81,21 +91,26 @@ int main()
     	fprintf(fpv, "Vitesse initiale de la particule numero : %d\n", i);
         for(int j = 0; j < D; j++)
         {
-            v[i][j] = (float) (rand() % L); // norme de la composante
+            float coeff = ((float) (rand() % 100) + 1.) / 100; // valeur aléatoire entre 0 et 2pi
             
-            float sign = rand()%2; // signe de la composante
-            if (sign == 0)
+            
+            if (j == 0)
             {
-            	v[i][j] = -v[i][j];
+            	v[i][j] = v_rms * cos(coeff*2.* M_PI);
+            	//printf("%f\n\n", v[i][j]);
+            }
+            else
+            {
+            	v[i][j] = v_rms * sin(coeff*2.* M_PI);
+            	//printf("%f\n\n", v[i][j]);
             }
             
             fprintf(fpv, "%f\n", v[i][j]);
-            printf("%f\n", v[i][j]);
-            printf("\n");
+            //printf("%f\n", v[i][j]);
+            //printf("\n");
         }
         fprintf(fpv, "\n\n");
     }
-    */
     
     
     //calcul de l'énergie initiale E_0
@@ -133,12 +148,12 @@ int main()
             E_0 += mass*vit_i*vit_i/2.;
     }
     printf("\nE_0 = %f\n", E_0);
-    //fprintf(fpv, "\nE_0 = %f\n", E_0);
+    fprintf(fpv, "\nE_0 = %f\n", E_0);
     
-    //fclose(fpv);
+    fclose(fpv);
     
     
-    // initialisation ouverture fichiers
+    // Ouverture fichiers pour positions et énergie
     FILE *fptr;
     FILE *fp;
     // ouverture fichier des positions en mode écriture
@@ -240,8 +255,10 @@ int main()
 
     fclose(fptr); // fermeture fichier positions
     fclose(fp); // fermeture fichier énergie
-
+    
     
     printf("\nFin\n");
+    
+    return 0;
 	
 }
