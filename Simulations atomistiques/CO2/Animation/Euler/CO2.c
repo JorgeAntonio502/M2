@@ -20,7 +20,14 @@ float Lennard_Jones(float r)
 {
 	if (r < Rc)
 	{
-    	return 4*epsilon*(pow(sigma/r, 12) - pow(sigma/r, 6)) - 4*epsilon*(pow(sigma/Rc, 12) - pow(sigma/Rc, 6));
+		float ratio3_r = (sigma/r)*(sigma/r)*(sigma/r);
+		float ratio6_r = ratio3_r*ratio3_r;
+		
+		float ratio3_Rc = (sigma/Rc)*(sigma/Rc)*(sigma/Rc);
+		float ratio6_Rc = ratio3_Rc*ratio3_Rc;
+		
+		return 4*epsilon*(ratio6_r*ratio6_r - ratio6_r) - 4*epsilon*(ratio6_Rc*ratio6_Rc - ratio6_Rc);
+    	//return 4*epsilon*(pow(sigma/r, 12) - pow(sigma/r, 6)) - 4*epsilon*(pow(sigma/Rc, 12) - pow(sigma/Rc, 6));
     }
     else
     {
@@ -30,7 +37,11 @@ float Lennard_Jones(float r)
 
 float dLennard_Jones(float r)
 {
-	return 4*epsilon*(6*( pow(sigma, 6)/pow(r, 7) ) - 12*( pow(sigma, 12)/pow(r, 13) ) );
+	float r7 = r*r*r*r*r*r*r;
+	float r13 = r7*r*r*r*r*r*r;
+	
+	return 4*epsilon*(6*(sigma/r7) - 12*(sigma/r13));
+	//return 4*epsilon*(6*( pow(sigma, 6)/pow(r, 7) ) - 12*( pow(sigma, 12)/pow(r, 13) ) );
 }
 
 // Fonction principale :
@@ -162,7 +173,7 @@ int main()
                     
                     for (int l = 0; l < D; l++)
 					{
-						r_jk += pow(x[k][l] - x[j][l], 2);
+						r_jk += (x[k][l] - x[j][l])*(x[k][l] - x[j][l]);
 					}
 					
 					r_jk = sqrt(r_jk);
@@ -172,7 +183,7 @@ int main()
 		     		// Calcul des composantes de la force exercée par k sur j dans F
                     for (int l = 0; l < D; l++) 
                     {
-                        F_j[l] += (dLennard_Jones(r_jk)) * ( (x[k][l]- x[j][l]) )/(r_jk);
+                        F_j[l] += (dLennard_Jones(r_jk)) * ( (x[k][l]- x[j][l]) )/r_jk;
                     }
                 }
             }
@@ -196,13 +207,13 @@ int main()
                     x[j][l] = 0;
                 }
                 
-                // Ecriture de la composante de vitesse calculée pour j à l'itération N dans le fichier dédié
+                // Ecriture de la composante de position calculée pour j à l'itération N dans le fichier dédié
                 fprintf(fptr, "%f\t", x[j][l]); 
             }
             
             vit_j = sqrt(vit_j); // Calcul final de la valeur de la vitesse de j
             
-            E_kN += mass*vit_j*vit_j/2.; // Ajout de l'énergie cinétique de j à l'énergie cinétique
+            E_kN += mass*vit_j*vit_j/2.; // Ajout de l'énergie cinétique de j à l'énergie cinétique totale à N
             
             fprintf(fptr, "\n"); // Retour à la ligne pour l'écriture de la nouvelle position de j+1 à l'itération N
         }
