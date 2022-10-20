@@ -9,7 +9,7 @@ int L = 10; // taille de la boîte (carrée)
 float epsilon = 1.;
 float sigma = 1.;
 float Rc = 2.5;
-int n = 7; // Nombre de particules
+int n = 15; // Nombre de particules
 float mass = 1.; // masse des particules (g)
 float T = 3.; // Température en Kelvins
 float R = 8314.; // g.m2.s-2.mol-1.K-1 (fois 1000 pour avoir des grammes comme la masse des particules)
@@ -99,6 +99,7 @@ int main()
     
     float x[n][D]; // tableau contenant les positions
     float v[n][D]; // tableau contenant les vitesses
+    float F_t[n][D]; // tableau contenant les forces à l'instant t
     
     // La norme de la vitesse moyenne des particules est déduite de la température choisie
     float n_gaz = n/V; // Quantité de matière (mol)
@@ -195,16 +196,13 @@ int main()
     	E_pN = 0.;
     	E_kN = 0.;
     	
-    	// Parcours des n particules :
+    	// Premier parcours des n particules pour les positions
         for (int j = 0; j < n; j ++) 
         {
-            // vitesse de la particule j au tour N
-            float vit_j = 0.;
-        	
-        	// Vecteur force exercé sur la particule j par les autres particules
-            float F_j[D] = {0, 0}; 
+        	// Vecteur force exercé sur la particule j par les autres particules à t
+            float F_j[D] = {0, 0}; // à t
             
-            // Parcours des autres particules :
+            // Parcours des autres particules et calcul de f_t à partir de x_t
             for (int k = 0; k < n; k++) 
             {
                 if (j != k) // Exclusion de j
@@ -216,11 +214,9 @@ int main()
 						r_jk += (x[k][l] - x[j][l])*(x[k][l] - x[j][l]);
 					}
 					
-					r_jk = sqrt(r_jk);
-
-                    E_pN += Lennard_Jones(r_jk)/2; // Ajout de l'énergie potentielle entre j et k à l'énergie potentielle   
+					r_jk = sqrt(r_jk); 
 					
-		     		// Calcul des composantes de la force exercée par k sur j dans F
+		     		// Calcul des composantes de la force exercée par k sur j
 		     		
                     for (int l = 0; l < D; l++) 
                     {
@@ -229,39 +225,93 @@ int main()
                     
                     // Ajout des éventuelles forces et énergies dues au conditions aux limites périodiques 
                     
-                    F_j[0], F_j[1], E_pN += compute_force(x[j], x[k]);
+                    //F_j[0], F_j[1], E_pN += compute_force(x[j], x[k]);
                 }
-            }
-
-            // Calcul des nouvelles valeurs de x et v 
-            for (int l = 0; l < D; l++)
-            {
-            	// Euler
-                x[j][l] += dt * v[j][l];
-                v[j][l] += dt * F_j[l]; 
-                
-                // Ajout du carré de la composante à la vitesse de j
-                vit_j +=  v[j][l]*v[j][l];
-
-                if ((x[j][l] < 0)) // Vérification conditions aux limites (périodiques)
-                {
-                    x[j][l] = L;
-                }
-                if ((x[j][l] > L))
-                {
-                    x[j][l] = 0;
-                }
-                
-                // Ecriture de la composante de position calculée pour j à l'itération N dans le fichier dédié
-                fprintf(fptr, "%f\t", x[j][l]); 
             }
             
+            // Stockage de la force exercée sur j à t
+            F_t[j][0] = F_j[0];
+            F_t[j][1] = F_j[1];
+
+            // Calcul des nouvelles valeurs x_t pour j
+            for (int k = 0; k < D; k++)
+            {
+            	// Velocity Verlet pour les positions
+                x[j][k] += dt * v[j][k] + 0.5*F_j[k]*dt*dt;
+
+                if ((x[j][k] < 0)) // Vérification conditions aux limites (périodiques)
+                {
+                    x[j][k] = L;
+                }
+                if ((x[j][k] > L))
+                {
+                    x[j][k] = 0;
+                }
+                
+                // Ecriture de la composante de x_t+1 dans le fichier dédié
+                fprintf(fptr, "%f\t", x[j][k]); 
+            }
+            
+            fprintf(fptr, "\n"); // Retour à la ligne pour l'écriture de la nouvelle position de j+1 à l'itération N
+        }
+        
+		E_pN = 0.;
+        
+        // Second parcours des n particules pour les vitesses
+        for (int j = 0; j < n; j ++) 
+        {
+            // vitesse de la particule j au tour N
+            float vit_j = 0.;
+        	
+        	// Vecteur force exercé sur la particule j par les autres particules
+            float F_jsup[D] = {0, 0}; // à t+1
+            
+            // Parcours des autres particules et calcul de f_t+1 à partir de x_t+1
+            for (int k = 0; k < n; k++) 
+            {
+                if (j != k) // Exclusion de j
+                {
+                    float r_jk = 0; // Distance entre les particules j et k
+                    
+                    for (int l = 0; l < D; l++)
+					{
+						r_jk += (x[k][l] - x[j][l])*(x[k][l] - x[j][l]);
+					}
+					
+					r_jk = sqrt(r_jk);  
+					
+					E_pN += Lennard_Jones(r_jk)/2; // Ajout de l'énergie potentielle entre j et k à l'énergie potentielle à t+1 
+					
+		     		// Calcul des composantes de la force exercée par k sur j
+		     		
+                    for (int l = 0; l < D; l++) 
+                    {
+                        F_jsup[l] += dLennard_Jones(r_jk) * ( (x[k][l]- x[j][l]) )/r_jk;
+                    }
+                    
+                    // Ajout des éventuelles forces et énergies dues au conditions aux limites périodiques 
+                    
+                    //F_jsup[0], F_jsup[1], E_pN += compute_force(x[j], x[k]);
+                }
+            }
+
+            // Calcul des nouvelles valeurs v_t+1 pour j
+            for (int k = 0; k < D; k++)
+            {
+            	// Velocity Verlet pour les vitesses
+                v[j][k] += dt/2 * (F_t[j][k] + F_jsup[k]);
+                
+                // Ajout composante vitesse à vitessse de j
+                vit_j += v[j][k]*v[j][k];
+            }
+           
             vit_j = sqrt(vit_j); // Calcul final de la valeur de la vitesse de j
             
             E_kN += mass*vit_j*vit_j/2.; // Ajout de l'énergie cinétique de j à l'énergie cinétique totale à N
             
             fprintf(fptr, "\n"); // Retour à la ligne pour l'écriture de la nouvelle position de j+1 à l'itération N
         }
+        
         fprintf(fptr, "\n\n"); // Double saut de ligne pour l'écriture des positions à l'itération N + 1
         
         // Ecriture des éneries dans leurs fichiers respectifs
