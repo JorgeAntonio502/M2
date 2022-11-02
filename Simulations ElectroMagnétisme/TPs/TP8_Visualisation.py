@@ -91,11 +91,13 @@ plt.show()
 # d)
 
 x = np.linspace(-3, 13, 161) # nombre de points à calculer selon x
+t = np.linspace(0, 4, 41)
 
 fig = plt.figure() 
 plt.xlim(-3, 13)
 plt.ylim(0, 1)
 line, = plt.plot([], [])
+
 
 def animate(i): 
     # i est le temps ici
@@ -104,6 +106,6 @@ def animate(i):
     line.set_data(x, y) #tracé de la courbe au temps i
     return line,
  
-ani = animation.FuncAnimation(fig, func = animate, frames=np.linspace(0, 4, 41),
-                              interval=10, repeat = True)
+ani = animation.FuncAnimation(fig, func = animate, frames = t,
+                              interval = 10, repeat = True)
 plt.show()
