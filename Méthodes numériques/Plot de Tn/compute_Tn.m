@@ -2,7 +2,6 @@ function [res] = compute_Tn(n, R, Z_r)
 	eps_r = 2;
 	mu_r = 1;
 	lambda = 1;
-	%Z_r = sqrt(eps_r/mu_r);
 	lambda = 1;
 	k_0 = 2*pi/lambda;
 	
