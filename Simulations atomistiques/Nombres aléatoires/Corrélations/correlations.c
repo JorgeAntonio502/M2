@@ -9,7 +9,7 @@ int main()
 {
 	// Fichier contenant les donnees
 	FILE *fp;
-    fp = fopen("random_numbers.txt", "w");
+    fp = fopen("correlations.txt", "w");
 
     if (fp == NULL) {
 		printf("File error\n");
@@ -17,13 +17,16 @@ int main()
 	}
 	
 	// Parametres du generateur
-	int k = pow(7, 5);
+	int k = 899;
 	int l = 0;
-	int m = pow(2, 31) - 1;
+	int m = 32760;
 	int x_n = 12;
 	
-	// Nombre de valeurs generees (au moins 10 periodes)
-	long int N = 100;
+	// Variable contenant le dernier nombre genere
+	float r_inf;
+	
+	// Nombre de valeurs generees
+	long int N = 10e4;
 	
 	// Compteur de répétitions
 	int cpt = 1;
@@ -43,10 +46,20 @@ int main()
 		// Calcul du nombre aleatoire genere
 		float r = x/m;
 		
+		// Ecriture de r_inf et de r dans le fichier
+		if (i != 0)
+		{
+			fprintf(fp, "%f %f\n", r_inf, r);
+		}
+		
+		// Enregistrement du nombre genere
+		r_inf = r;
+		
 		// Condition pour la reference
 		if (i == 0)
 		{
 			r_reff = r;
+			printf("Premier nombre généré : %f\n", r);
 		}
 		
 		// Condition pour periode
@@ -61,9 +74,6 @@ int main()
 			cpt += 1;
 			
 		}
-		
-		// Ecriture de r dans le fichier
-		fprintf(fp, "%d %f\n", i+1, r);
 		
 		// MAj de x_n
 		x_n = x;
