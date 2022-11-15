@@ -1,0 +1,26 @@
+Le taux de corrélation est tel que : -1 <= C <= 1
+Décrit la force de la relation LINEAIRE existante entre deux variables d'une analyse de corrélation. Dans quelle mesure la relation entre les variables suit une ligne imaginaire tracée dans les données.
+Ne concerne que deux données. Ne détecte pas les relations curvilinéaires. Peut être biaisée si valeurs aberrantes présentes dans les données analysées 
+Plus C est proche de 0 plus la relation LINEAIRE est faible. Ne dit rien pour les autres types de relations.
+
+- Cas P1 :
+	R(1) = 0.249983
+	C(1) = 0.003592
+
+- P2 :
+	R(1) = 0.253999
+	C(1) = 0.122105 
+	
+Si on utilise des données telles que la période chute à 12 :
+
+	C_min(1) = -0.538253 (P1 avec m = 32760)
+	
+Si on utilise des données telles que la période monte à 32782 :
+
+	C_max(1) = 0.000838
+	
+On voit donc que plus la période du générateur est grande plus le coefficient de corrélation tend vers 0, ce qui est intuitif. Il faut donc choisir les paramètres du générateur tels que la période soit la plus grande possible et améliorer la qualité de l'aspect pseudo-aléatoire.
+
+Si les données de l'échantillon sont parfaitement corrélées, le coefficient vaudra -1 ou 1 en fonction de la droite imaginaire liant les données. Si elle croît C vaudra 1, si elle décroît alors ce sera -1
+
+Si les données sont parfaitement aléatoires alors il n'y a aucune dépendance curvilinéaire ni linéaire. Le coefficient C vaudra 0.  
