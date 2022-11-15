@@ -1,0 +1,65 @@
+- Effet des petites variations sur k avec l = 0, m = 6075 et x_0  = 12
+
+	Si on ajoute 1, la période passe à 540
+	Si on soustrait 1, la période est indéterminée
+	
+	Si on ajoute 10, la période passe à 540
+	Si on soustrait 10, la période est indéterminée
+	
+	Si on ajoute 100, la période passe à 108
+	Si on soustrait 100, la période est indéterminée
+	
+	
+- Effet des petites variations sur m avec k = 16807, l = 0 et x_0 = 12
+
+	Si on ajoute 1, la période passe à 3
+	Si on soustrait 1, la période passe à 150
+	
+	Si on ajoute 10, la période passe à 1216
+	Si on soustrait 10, la période passe à 1212
+	
+	Si on ajoute 100, la période passe à 12
+	Si on soustrait 100, la période passe à 476
+	
+	Si on ajoute 1000, la période passe à 564
+	Si on soustrait 1000, la période passe à 28
+	
+	On peut donc voir que ce paramètre  a une influence significative sur la période du générateur
+	
+	
+- Effet des petites variations sur l avec k = 16807, m = 6075 et x_0  = 12
+
+	Si on ajoute 1, la période passe à 972
+	Si on soustrait 1, la période passe à 972
+	
+	Si on ajoute 2, la période passe à 972
+	Si on soustrait 2, la période passe à 972
+	
+	Si on ajoute 3, la période passe à 81
+	Si on soustrait 3, la période passe à 324
+	
+	Si on ajoute 4, la période passe à 972
+	Si on soustrait 4, la période passe à 972
+	
+	Si on ajoute 5, la période passe à 972
+	Si on soustrait 5, la période passe à 972
+	
+	Les valeurs négatives semblent problématiques. Les petites variations vers des valeurs positives modifient la valeur de la période mais aucun schéma régulier ne semble apparaître.
+	
+	
+- Effet des petites variations sur x_0 avec l = 0 k = 16807, m = 6075
+
+	Si on ajoute 1, la période passe à 324
+	Si on soustrait 1, la période passe à 324
+	
+	Si on ajoute 2, la période passe à 324
+	Si on soustrait 2, la période passe à 324
+	
+	Si on ajoute 3, la période passe à 108
+	Si on soustrait 3, la période passe à 36
+	
+	Si on ajoute 4, la période passe à 324
+	Si on soustrait 4, la période passe à 324
+	
+	Si on ajoute 5, la période passe à 324
+	Si on soustrait 5, la période passe à 324

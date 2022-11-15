@@ -1,0 +1,60 @@
+- Effet des petites variations sur k avec l = 0, m = 32768 et x_0  = 12
+
+	Si on change la valeur de k de +1 ou de -1, la période n'est plus évidente. En effet, elle semble dépasser le seuil limite m. On génère 10m et 100m nombres mais aucun résultat. 
+	
+	L'effet est le même pour des variations de l'ordre de +10 ou -10.
+	
+	
+- Effet des petites variations sur m avec k = 899, l = 0 et x_0  = 12
+
+	Si on ajoute 1, la période passe à 330
+	Si on soustrait 1, la période passe à 150
+	
+	Si on ajoute 10, la période passe à 202
+	Si on soustrait 10, la période passe à 2480
+	
+	Si on ajoute 100, la période passe à 410
+	Si on soustrait 100, la période passe à 4083
+	
+	Si on ajoute 1000, la période passe à 66
+	Si on soustrait 1000, la période passe à 1710
+	
+	On peut donc voir que ce paramètre  a une influence significative sur la période du générateur
+	
+	
+- Effet des petites variations sur l avec k = 899, m = 32768 et x_0  = 12
+
+	Si on ajoute 1, la période passe à 16384
+	Si on soustrait 1, la période est indéterminée
+	
+	Si on ajoute 2, la période passe à 8192
+	Si on soustrait 2, la période passe à 8192
+	
+	Si on ajoute 3, la période passe à 16384
+	Si on soustrait 3, la période est indéterminée
+	
+	Si on ajoute 4, la période passe à 16384
+	Si on soustrait 4, la période est indéterminée
+	
+	Si on ajoute 5, la période passe à 16384
+	Si on soustrait 5, la période est indéterminée
+	
+	Les valeurs négatives semblent problématiques. Les petites variations vers des valeurs positives modifient la valeur de la période mais aucun schéma régulier ne semble apparaître.
+	
+	
+- Effet des petites variations sur x_0 avec l = 0 avec k = 899, m = 32768
+
+	Si on ajoute 1, la période passe à 8192
+	Si on soustrait 1, la période passe à 8192
+	
+	Si on ajoute 2, la période passe à 4096
+	Si on soustrait 2, la période passe à 4096
+	
+	Si on ajoute 3, la période passe à 8192
+	Si on soustrait 3, la période passe à 8192
+	
+	Si on ajoute 4, la période passe à 512
+	Si on soustrait 4, la période passe à 1024
+	
+	Si on ajoute 5, la période passe à 8192
+	Si on soustrait 5, la période passe à 8192
