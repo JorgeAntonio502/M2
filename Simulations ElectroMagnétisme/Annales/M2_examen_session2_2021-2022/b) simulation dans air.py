@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Oct  8 19:18:30 2022
+Created on Sat Nov 19 14:19:14 2022
 
 @author: Utilisateur
 """
@@ -9,14 +9,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-"""
-# Amélioration sur N_lambda
-"""
-
 # Constantes :
 c = 2.99792458e8
 lambda_0 = 1.55e-6
-N_lambda = 20
+N_lambda = 11
 eps_air = 1 
 T = lambda_0 / c
 
@@ -26,21 +22,21 @@ line, = plt.plot([], [])
 
 # Nombre de positions
 xmin = 0
-xmax = 15*lambda_0
+xmax = 14*lambda_0
 L = xmax-xmin
 plt.xlim(xmin, xmax)
 plt.ylim(-2, 2)
 
 # Pas et facteur de stabilité
 dx = lambda_0 / N_lambda
-S = 0.4
+S = 0.7
 dt = (S * dx) / c
 
 # Valeurs abscisses
 nbx = int(L / dx)
 x = np.linspace(xmin, xmax, nbx)
 
-# Nombre valeurs temporelles : (facteur * de points pour une période)
+# Nombre valeurs temporelles
 nbt = 2 * int((xmax/lambda_0) * T / dt)
 
 # Tableau des constantes diaéliectriques
@@ -60,7 +56,7 @@ def animate(n):
     t_sup = (n + 1) * dt
     
     # Onde venant de la gauche :
-    un_sup[0] = np.cos( (2*np.pi/T * t_sup) ) * np.exp( -(t_sup - 2*T)**2 / (0.7*T)**2 )
+    un_sup[0] = np.cos( (2*np.pi/T * t_sup) ) * np.exp( -(t_sup - 4.3*T)**2 / (1.3*T)**2 )
 
     line.set_data(x, un_sup)
     
@@ -77,7 +73,7 @@ Calcul des coefficients C1 et C2 tels que :
     Vphase_num = C2*c
 """
 C1 = 2 * np.arcsin(np.sin(np.pi*S/N_lambda)/S)
-C2 = 2*np.pi/(lambda_0*(C1/dx))
+C2 = 2 * np.pi/(lambda_0*(C1/dx))
 print("k_numérique = ", C1, "/dx")
 print("vPhase_numérique = ", C2, ".c\n\n soit\n")
 
