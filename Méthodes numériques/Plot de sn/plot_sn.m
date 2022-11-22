@@ -1,4 +1,4 @@
-clear all
+clear
 
 % Paramètres
 N = 20;
@@ -12,8 +12,13 @@ k_0 = 2*pi/lambda;
 nu_r = sqrt(eps_r/mu_r);
 phi = 0;
 
-dn = compute_dn(n, R, phi, nu_r);
+sn = compute_sn(n, k_0*R, phi, nu_r);
 
-bar(n, abs(dn))
+bar(n, abs(sn))
 xlabel("n")
-ylabel("dn")
+ylabel("Tn") 
+
+
+
+
+

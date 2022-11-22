@@ -17,13 +17,13 @@ int main()
 	}
 	
 	// Parametres du generateur
-	int k = pow(7, 5);
+	int k = 899;
 	int l = 0;
-	int m = pow(2, 31) - 1;
+	int m = 32768;
 	int x_n = 12;
 	
 	// Nombre de valeurs generees (au moins 10 periodes)
-	long int N = 100;
+	long int N = m;
 	
 	// Compteur de répétitions
 	int cpt = 1;

@@ -1,10 +1,5 @@
-function [res] = compute_dn(n, R, Z_r)
-	alphan = 1;
-	eps_r = 2;
-	mu_r = 1;
-	lambda = 1;
-	%Z_r = sqrt(eps_r/mu_r);
-	lambda = 1;
-	k_0 = 2*pi/lambda;
+function [res] = compute_dn(n, x, phi, nu_r)
 	
-	res = alphan * ((dbesselh(n, k_0*R) .* besselj(n, k_0*R) - besselh(n, 1, k_0*R) .* dbesselj(n, k_0*R)) ./ (dbesselh(n, k_0*R) .* besselj(n, k_0*Z_r*R) - Z_r*besselh(n, 1, k_0*R) .* dbesselj(n, k_0*Z_r*R) ));
+	alpha_n = (-1*exp(-1i*phi)).^n;
+	
+	res = alpha_n .* ( ((dbesselh(n, x) .* besselj(n, x) - besselh(n, 1, x) .* dbesselj(n, x)) ./ (dbesselh(n, x) .* besselj(n, nu_r*x) - nu_r*besselh(n, 1, x) .* dbesselj(n, nu_r*x) )) );

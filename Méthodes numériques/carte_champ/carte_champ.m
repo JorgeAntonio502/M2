@@ -23,25 +23,23 @@ clear
 %}
 
 % Constantes du probleme
-% alpha_n = 1;
 eps_r = 2;
 mu_r = 1;
 nu_r = sqrt(eps_r*mu_r);
-Z_r = sqrt(eps_r/mu_r);
-lambda = 1;
-R = 2;
+lambda = 2;
+R = 1;
 k_0 = 2*pi/lambda;
 
 % angle d'incidence de l'onde 
-phi = pi/4;
+phi = pi/6;
 
-% Calcul de l'ordre d'effondrement selon la loi empirique (entier superieur)
-N_ordre = 3;
+% Ordre des sommes à calculer
+N_ordre = 5;
 
 % Dimensions d'espace
-x0 = 10;
-y0 = 10;
-N_points = 100;  % nombre de points selon x et y
+x0 = 5;
+y0 = 5;
+N_points = 300;  % nombre de points selon x et y
 
 % Creation maillage de l'espace
 [x, y] = meshgrid(linspace(-x0, x0, N_points), linspace(-y0, y0, N_points));
@@ -60,10 +58,8 @@ u_inc = exp(1i*k_0*r.*sin(phi-theta));
 
 n = -N_ordre:N_ordre; % vecteur contenant les différents n
 
-alpha_n = (-1*exp(-1i*phi)).^n; % vecteur contenant les coefficients alpha_n
-
-dn = alpha_n .* compute_dn(n, k_0*R, Z_r);
-sn = alpha_n .* compute_Tn(n, k_0*R, Z_r); 
+dn = compute_dn(n, k_0*R, phi, nu_r);
+sn = compute_sn(n, k_0*R, phi, nu_r); 
 
 % Declaration et calcul des champs interieur et diffracte :
 u_int = 0;
@@ -86,7 +82,7 @@ u_final = flag.*u_int .+ ~flag.*u_ext;
 subplot(221), pcolor(x, y, real(u_inc));
 xlabel("x")
 ylabel("y")
-title("Onde incidente")
+title("Champ incident")
 colorbar
 shading flat
 
