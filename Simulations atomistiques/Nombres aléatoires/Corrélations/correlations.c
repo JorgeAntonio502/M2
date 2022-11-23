@@ -3,7 +3,7 @@
 #include <math.h>
 #include <time.h>
 
-float LC_RNG(int k, int l, int m, int x_n);
+long double LC_RNG(long int k, long int l, long int m, long int x_n);
 
 int main()
 {
@@ -17,13 +17,13 @@ int main()
 	}
 	
 	// Parametres du generateur
-	int k = 899;
+	long int k = pow(7, 5);
 	int l = 0;
-	int m = 32760;
+	long int m = pow(2, 31) - 1;
 	int x_n = 12;
 	
 	// Variable contenant le dernier nombre genere
-	float r_inf;
+	float x_inf;
 	
 	// Nombre de valeurs generees
 	long int N = 10e4;
@@ -33,7 +33,7 @@ int main()
 	int periode = 0;
 	
 	// Variable contenant r de reference
-	float r_reff = 0;
+	float x_reff = 0;
 	
 	// Début de generations de nombres
 	printf("Début\n\n");
@@ -44,26 +44,26 @@ int main()
 		float x = LC_RNG(k, l, m, x_n);
 		
 		// Calcul du nombre aleatoire genere
-		float r = x/m;
+		//float r = x/m;
 		
 		// Ecriture de r_inf et de r dans le fichier
 		if (i != 0)
 		{
-			fprintf(fp, "%f %f\n", r_inf, r);
+			fprintf(fp, "%f %f\n", x_inf, x);
 		}
 		
 		// Enregistrement du nombre genere
-		r_inf = r;
+		x_inf = x;
 		
 		// Condition pour la reference
 		if (i == 0)
 		{
-			r_reff = r;
-			printf("Premier nombre généré : %f\n", r);
+			x_reff = x;
+			printf("Premier nombre généré : %f\n", x);
 		}
 		
 		// Condition pour periode
-		if (i != 0 && r == r_reff)
+		if (i != 0 && x == x_reff)
 		{
 			printf("Répétition n°= %d | Position n°= %d\n\n", cpt, i);
 			
@@ -89,7 +89,7 @@ int main()
 	return 0;
 }
 
-float LC_RNG(int k, int l, int m, int x_n)
+long double LC_RNG(long int k, long int l, long int m, long int x_n)
 {
 	return (k*x_n + l) % m;
 }

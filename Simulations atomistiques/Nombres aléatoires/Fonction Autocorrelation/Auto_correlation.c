@@ -17,9 +17,9 @@ int main()
 	}
 	
 	// Parametres du generateur
-	int k = 899; // P2 : 16768
+	int k = pow(7, 5); // P2 : 16768
 	int l = 0;
-	int m = 32783; // P1 : {32760, 32783}, P2 : {6075}  
+	int m = pow(2, 31) - 1; // P1 : {32760, 32783}, P2 : {6075}  
 	int x_n = 12;
 	
 	// Nombre de valeurs generees (au moins 10 periodes)
