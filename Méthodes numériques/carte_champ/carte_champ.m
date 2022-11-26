@@ -23,22 +23,22 @@ clear
 %}
 
 % Constantes du probleme
-eps_r = 2;
+eps_r = 12;
 mu_r = 1;
 nu_r = sqrt(eps_r*mu_r);
-lambda = 2;
+lambda = 9.2417;
 R = 1;
 k_0 = 2*pi/lambda;
 
 % angle d'incidence de l'onde 
-phi = pi/6;
+phi = 0;
 
 % Ordre des sommes à calculer
 N_ordre = 5;
 
 % Dimensions d'espace
-x0 = 5;
-y0 = 5;
+x0 = 3;
+y0 = 3;
 N_points = 300;  % nombre de points selon x et y
 
 % Creation maillage de l'espace

@@ -1,0 +1,16 @@
+Rq : Utiliser des archives de type .zip pour rendre les fichiers
+
+	- Prise en main du code
+
+1) L'exécution du code permet de voir qu'il fonctionne correctement et que l'énergie est bien conservée.
+
+2) La suppression des condtions périodiques aux limites ne change pas significativement les résultats sur l'énergie totale. Cela peut s'expliquer de par la faible énergie cinétique et donc faible vitesse des particules (de l'ordre de l'unité seulement, 3 maximum). C'est d'ailleurs pourquoi l'énergie totale est négative : l'énergie potentielle prédomine.
+De plus, la nanoparticule n'est peut-être pas sutuée assez proche des bord pour que les corrections liées au conditions aux limites périodiques soient significatives.
+
+3)4)5) On trace l'évolution de la coordonnée selon x du centre de masse sur 1500 pas de temps et on voit que la valeur oscille reste constante à la position x = 8e-9. Cela semble cohérent étant donné que le centre de masse de la particule est supposé rester à peu près au même endroit au cours du temps. De plus, les vitesses initiales des atomes contituant la nao particule sont nulles, ce qui explique aussi l'absence de mouvement d'ensemble.
+
+
+	- Collision de 2 nano-particules
+	
+1)
+
