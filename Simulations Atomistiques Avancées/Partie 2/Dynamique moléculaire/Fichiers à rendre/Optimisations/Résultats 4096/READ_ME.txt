@@ -1,0 +1,2 @@
+- lire "plot.gnu" depuis gnuplot
+- Commenter et dé-commenter les lignes de plot pour afficher les différentes résultats

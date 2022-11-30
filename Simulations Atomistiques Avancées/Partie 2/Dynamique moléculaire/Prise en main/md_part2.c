@@ -8,25 +8,6 @@
 
 /* Evaluates the center of mass of the nano-particle */
 double Center_of_mass (int ndim, int n_start, int n_end, double r[]) {
-  /*
-  int i;
-  double Rx = 0.0;
-
-  Calcul de la coordonnee selon x de R
-  for (i=n_start; i<3*n_end; i++) 
-  {
-  	// On ne garde que elements correspondants a la coordonnee x
-  	if(i%3 == 0)
-  	{
-	 	Rx += r[i];
-	 	//printf("%f\n", Rx/n);
-	}
-  }
-  
-  //printf("%d\n", (n_end-n_start));
-  
-  return Rx/(n_end-n_start);
-  */
   
   int i, j;
   double Rx = 0.0;
@@ -195,28 +176,6 @@ int main (int argc, char * argv[]) {
   
   // Ecriture des colonnes du fichier de donnees
   report(0,log,ndim,n,0,pos,vel,epot, Rx_A, Rx_B);
-  
-  /*
-  printf("Valeurs x de A :\n\n");
-  for (i = 0; i < 3*n/2; i++)
-  {
-  	if(i%3 == 0)
-  	{
-  		printf("%f\n", pos[i]);
-  	}
-  }
-  printf("\n\n");
-  
-  printf("Valeurs x de B :\n\n");
-  for (i = 3*n/2; i < 3*n; i++)
-  {
-  	if(i%3 == 0)
-  	{
-  		printf("%f\n", pos[i]);
-  	}
-  }
-  */
-  
   
   /* Main MD loop */
   for (i=0; i<nsteps; i++) {

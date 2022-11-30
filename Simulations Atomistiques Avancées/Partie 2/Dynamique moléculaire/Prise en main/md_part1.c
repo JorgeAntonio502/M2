@@ -6,31 +6,26 @@
 #include <stdio.h>
 #include <math.h>
 
-/* Evaluates the center of mass of the nano-particle */
-double Center_of_mass (int ndim, int n, double r[]) {
-  /*
-  int i;
-  double Rx = 0.0;
-  
-  // r est un vecteur de dimension 6*n 
-  // Les coordonnées selon x se trouvent tous les 3 éléments de 0 à 3*n
-
-  // Calcul de la coordonnee selon x de R
-  for (i=0; i<3*n; i++) 
-  {
-  	// On ne garde que elements correspondants a la coordonnee x
-  	if(i%3 == 0)
-  	{
-	 	Rx += r[i];
-	 	//printf("%f\n", Rx/n);
-	}
+/*Evaluates the quadratic radius*/
+double quadratic_radius(int ndim, int n, double r[], double Rx)
+{
+  int i, j;
+  double Rg = 0;
+	
+  for (j=0; j<n; j++) {
+    for (i=0; i<ndim; i++) {
+      Rg += (r[j*ndim+i] - Rx)*(r[j*ndim+i] - Rx);
+    }
   }
   
-  return Rx/n;
-  */
-  
+  return sqrt(Rg/n);
+}
+
+/* Evaluates the center of mass of the nano-particle */
+double Center_of_mass (int ndim, int n, double r[]) {
   int i, j;
   double Rx = 0.0;
+  
   for (j=0; j<n; j++) {
     for (i=0; i<ndim; i++) {
       Rx += r[j*ndim+i];
@@ -160,30 +155,33 @@ void read_file (FILE *fp, int *npart, int *ndim, double **box, double **pos, dou
 }
 
 /* Dump some thermodynamic quantities to file */
-void report (int what, FILE *fp, int ndim, int n, int steps, double pos[], double vel[], double epot, double Rx) {
+void report (int what, FILE *fp, int ndim, int n, int steps, double pos[], double vel[], double epot, double Rx, double Rg) {
   double ekin;
   
   // Creation des en-tetes des colonnes du fichier avant le debut de la simulation 
   if (what == 0) {
-    fprintf(fp,"# %6s %14s %14s %14s %14s %14s\n","Steps", "Rx", "Epot", "Temp", "Ekin", "Etot");
+    fprintf(fp,"# %6s %14s %14s %14s %14s %14s %14s\n","Steps", "Rx", "Rg", "Epot", "Temp", "Ekin", "Etot");
   }
   
   // Ecriture des donnees tous les dix pas
   else if (what == 1) {
     ekin = kinetic(ndim, n, vel);
-    fprintf(fp, "%8d %14f %14f %14f %14f %14f\n", steps, Rx, epot, 2.0*ekin/(n*ndim), ekin, epot+ekin);
+    fprintf(fp, "%8d %14f %14f %14f %14f %14f %14f\n", steps, Rx, Rg, epot, 2.0*ekin/(n*ndim), ekin, epot+ekin);
   }
 }
 
 int main (int argc, char * argv[]) {
 
   // Parametres et tableaux de donnees
-  int i, n, k, ndim, nsteps = 1500;
+  int i, n, k, ndim, nsteps = 1000;
   double *box, dt = 0.002, rc = 2.5, epot;
   double *pos, *vel, *forc;
   
   // Ajout de la variable pour la coordonnee x du centre de masse
   double Rx = 0.0;
+  
+  // Ajout variablr pour rayon quadratique moyen
+  double Rg = 0.0;
   
   // Configuration fichiers
   FILE *file, *log;
@@ -196,18 +194,7 @@ int main (int argc, char * argv[]) {
   forces(ndim,n,rc,box,pos,forc,&epot);
   
   // Ecriture des colonnes du fichier de donnees
-  report(0,log,ndim,n,0,pos,vel,epot, Rx);
-  
-  /*
-  for (i=0; i<3*n; i++) 
-  {
-  	// On ne garde que elements correspondants a la coordonnee x
-  	if(i%3 == 0)
-  	{
-	 	printf("%f\n", pos[i]);
-	}
-  }
-  */
+  report(0,log,ndim,n,0,pos,vel,epot,Rx,Rg);
   
   /* Main MD loop */
   for (i=0; i<nsteps; i++) {
@@ -218,8 +205,11 @@ int main (int argc, char * argv[]) {
     // Calcul du centre de masse avec les nouvelles positions
     Rx = Center_of_mass(ndim, n, pos);
     
+    // Calcul du rayon quadratique
+    Rg = quadratic_radius(ndim, n, pos, Rx);
+    
     // Ecriture des donnees dans le fichier
-    if (i % 10 == 0) report(1,log,ndim,n,i,pos,vel,epot,Rx);
+    if (i % 10 == 0) report(1,log,ndim,n,i,pos,vel,epot,Rx,Rg);
   }
   fclose(file);
   fclose(log);
