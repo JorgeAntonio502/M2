@@ -11,6 +11,7 @@ set yrange [0:45 + 5]
 set tics nomirror
 set xlabel "x"
 set ylabel "y"
+unset key
 stats 'Positions.txt' name 'A'
 do for [i=0:A_blocks-1] {
 	plot 'Positions.txt' index i with points pointtype 7 linecolor rgb "red" notitle
