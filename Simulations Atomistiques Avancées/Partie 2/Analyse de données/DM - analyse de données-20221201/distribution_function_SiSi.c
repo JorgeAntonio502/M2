@@ -7,7 +7,7 @@ Prototypes des fonctions
 ######################*/
 
 // lecture du fichier des paramètres
-void read_file (FILE *fp, int *npart, int *ndim, double **pos);
+void read_file (FILE *fp, int *ndim, double **pos);
 
 // Calcul de la distance entre deux atomes
 double compute_r(double x1, double y1, double z1, double x2, double y2, double z2);
@@ -22,7 +22,7 @@ int main (int argc, char * argv[])
 	// Configuration fichiers
 	FILE *file, *log;	
 	
-	file = fopen("config_300K.xyz","r");
+	file = fopen("config_3500K.xyz","r");
 	log  = fopen("output.log","w");
 	
 	// En-tête du fichier de sortie
@@ -32,13 +32,14 @@ int main (int argc, char * argv[])
 	int i, j;
 	
 	// Constantes du système
-	int n; // nombre de particules
 	int ndim; // dimension
-	//int nsteps = 1; 
+	double N_O = 672; // Nompbre d'atomes d'oxygène
+	double N_Si = 336; // Nombre d'atomes de Silice
+	double N = N_O + N_Si; // Nombre total d'atomes
 	double T = 300.; // Température
 	double L = 24.7; // taille de la boîte
 	double rho = 1008/(L*L*L);
-	double const factor_norm = (4*M_PI*rho)/3;
+	double const factor_norm = (L*L*L)/(4*M_PI*N_Si*(N_Si-1));
 	
 	// Variables
 	double rmax = L/2; // Distance maximale atteignable
@@ -58,7 +59,7 @@ int main (int argc, char * argv[])
 	}
 	
 	// Lecture fichier de donnees
-	read_file(file, &n, &ndim, &pos);
+	read_file(file, &ndim, &pos);
 	
 	/*
 	for(i = 0; i < n; i++)
@@ -68,14 +69,27 @@ int main (int argc, char * argv[])
 	*/
 	
 	// Calcul de l'histogramme h[nk]
-	double r;
+	double dx, dy, dz, r;
 	
-	for(i = 0; i < n-1; i++)
+	for(i = N_O; i < N; i++)
 	{
-		for(j = i+1; j < n; j++)
+		for(j = N_O; j < N; j++)
 		{
 			// Calcul de la distance entre les particules
-			r = compute_r(pos[i*(ndim)], pos[i*(ndim)+1], pos[i*(ndim)+2], pos[j*(ndim)], pos[j*(ndim)+1], pos[j*(ndim)+2]);
+			//r = compute_r(pos[i*(ndim)], pos[i*(ndim)+1], pos[i*(ndim)+2], pos[j*(ndim)], pos[j*(ndim)+1], pos[j*(ndim)+2]);
+			
+			// Calcul différences des coordonnées
+			dx = pos[i*(ndim)] - pos[j*(ndim)];
+			dy = pos[i*(ndim)+1] - pos[j*(ndim)+1];
+			dz = pos[i*(ndim)+2] - pos[j*(ndim)+2];
+			
+			// PBC
+			dx = dx - round(dx/L) * L;
+			dy = dy - round(dy/L) * L;
+			dz = dz - round(dz/L) * L;
+			
+			// Calcul distnace entre i et j
+			r = sqrt(dx*dx + dy*dy + dz*dz);
 			
 			// Calcul de l'indice k
 			k = ceil((r/dr));
@@ -83,31 +97,20 @@ int main (int argc, char * argv[])
 			// Remplissage de h[k]
 			if(k <= nk)
 			{
-				h[k] += 2;
+				h[k] += 1;
 			}
 		}	
 	}
 	
 	// Normalisation de h[nk]
-	double n_moy; // valeur moyenne des atomes à une distance donnée
-	double n_id; // distance donnée dans un gaz parfait
-	double r_inf, r_sup;
-	
+	double Vdr;
 	
 	for(i = 1; i < nk; i++)
 	{
-		// Calcul du nombre moyen à la distance i*dr
-		n_moy = h[i]/(nk*1008);
-		
-		// Calcul des positions sup et inf 
-		r_inf = (i-1)*dr;
-		r_sup = r_inf + dr;
-		
-		// Calcul de la distance dans un gaz parfait
-		n_id = factor_norm*(pow(r_sup,3) - pow(r_inf, 3));
-		
+		r = dr*i;
+		Vdr = (dr*r*r);
 		// Remplissage de g[i]
-		g[i] = n_moy/n_id;
+		g[i] = h[i]*factor_norm / Vdr;
 	}
 	
 	
@@ -133,7 +136,7 @@ Definitions des fonctions
    Retourne : n, le nombre de particules
    			  ndim, la dimension du problème
    			  pos, le tableau de positions*/
-void read_file (FILE *fp, int *npart, int *ndim, double **pos) {
+void read_file (FILE *fp, int *ndim, double **pos) {
 
   int i, n, err;
   char a[256];
@@ -141,7 +144,6 @@ void read_file (FILE *fp, int *npart, int *ndim, double **pos) {
   
   err = fscanf(fp,"%d",&n);
   *ndim = 3;
-  *npart = n;
   *pos = malloc((*ndim)*n*sizeof(double));
   
   for (i=0-2; i<n; i++) {

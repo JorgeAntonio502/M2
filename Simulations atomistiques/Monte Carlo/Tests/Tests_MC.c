@@ -22,10 +22,10 @@ double Rcut = 2.5;
 double Ucut = 4*epsilon*pow(sigma/Rcut, 12) - 4*epsilon*pow(sigma/Rcut, 6);
 
 // Parametres cristal
-float L = 45 + 2*Rcut; // taille de la boîte de simulation (carrée)
+float L = 9 + 2*Rcut; // taille de la boîte de simulation (carrée)
 float dl = (L-2*Rcut)/9;//pow(2,(double) 1/6) * sigma; // distance entre les molecules du cristal
 double half_box = L/2;
-float T = 3.; // Température en Kelvins
+float T = 0.01; // Température en Kelvins
 
 
 
@@ -80,7 +80,7 @@ int main()
 	// Declaration constantes
     double V = L*L;
     float norm = 1; // Longueur max des deplacements selon x et y
-    float P_tentative = 1; // Proba de tenter de deplacer 1 particule 
+    float P_tentative = 1/N; // Proba de tenter de deplacer 1 particule 
     
     // Tableaux
     double initial_position[D]; // stockage de la position avant deplacement
@@ -130,7 +130,7 @@ int main()
     	for(int j = 0; j < N_particules; j++)
     	{
 			// Calcul energie potentielle totale initiale
-			for(int k = 0; k < N_particules; k++)
+			for(int k = 0; k < N_particules-1; k++)
 			{
 				for(int l = k+1; l < N_particules; l++)
 				{
@@ -138,7 +138,7 @@ int main()
 					/*
 					if(i == 0 && j == 0)
 					{
-						printf("# Ep_i = %f\n", Ep_i);
+						printf("Ep_i = %f\n", Ep_i);
 					}
 					*/
 				}
@@ -165,13 +165,15 @@ int main()
 			pos[selection][1] += dy;
 			
 			// Calcul de l'energie potentielle totale suite au deplacement
-			for(int k = 0; k < N_particules; k++)
+			for(int k = 0; k < N_particules-1; k++)
 			{
 				for(int l = k+1; l < N_particules; l++)
 				{
 					Ep_f += compute_Ep(pos[k], pos[l])/2;
 				}
 			}
+			
+			printf("%f	%f\n", Ep_i, Ep_f);
 			
 			// Calcul probabilité d'acceptation
 			compute_probability(Ep_f, Ep_i, P_tentative, &P);
@@ -292,6 +294,7 @@ double compute_Ep(double P[D], double M[D])
 	
 	// Calcul de la distance r entre les deux particules
 	r = sqrt((M[0]-xp)*(M[0]-xp) + (M[1]-yp)*(M[1]-yp));
+	//printf("%f\n", r);
 	
 	// Lennaard_Jones tronque-decale
 	if(r < Rcut)

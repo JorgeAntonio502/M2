@@ -26,7 +26,7 @@ clear
 eps_r = 12;
 mu_r = 1;
 nu_r = sqrt(eps_r*mu_r);
-lambda = 9.2417;
+lambda = 9.27;
 R = 1;
 k_0 = 2*pi/lambda;
 
@@ -37,8 +37,8 @@ phi = 0;
 N_ordre = 5;
 
 % Dimensions d'espace
-x0 = 3;
-y0 = 3;
+x0 = 4;
+y0 = 4;
 N_points = 300;  % nombre de points selon x et y
 
 % Creation maillage de l'espace
