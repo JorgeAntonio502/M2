@@ -12,7 +12,7 @@ import matplotlib.animation as animation
 # Constantes :
 c = 2.99792458e8
 lambda_0 = 1.55e-6
-N_lambda = 34
+N_lambda = 25
 eps_air = 1 
 T = lambda_0 / c
 
@@ -22,7 +22,7 @@ line, = plt.plot([], [])
 
 # Nombre de positions
 xmin = 0
-xmax = 40*lambda_0
+xmax = 25*lambda_0 # Augmentation du domaine
 L = xmax - xmin
 
 plt.xlim(xmin, xmax)
@@ -41,11 +41,11 @@ x = np.linspace(xmin, xmax, nbx)
 nbt = int(1.7 * (xmax/lambda_0) * T / dt)
 
 # Paramètres milieu transparent
-n_milieu = 2.2
+n_milieu = 2
 lambda_milieu = lambda_0/n_milieu
-largeur_milieu = 9.6*lambda_0
+largeur_milieu = 10*lambda_0
 
-debut_milieu = L/2 - largeur_milieu/2
+debut_milieu = L/2
 fin_milieu = L/2 + largeur_milieu/2
 
 # Tableau des constantes diaéliectriques
@@ -63,18 +63,23 @@ un_inf = np.zeros(nbx)
 un = np.zeros(nbx)
 un_sup = np.zeros(nbx)
 
+# Variables pour mesure de lambda_milieu
+M1 = 0
+M2 = 0
+cpt = 0
 
 def animate(n):
-    
+
     for i in range(nbx-1):
+        
         un_sup[i] = ( S**2/eps_r[i] ) * (un[i+1] - 2*un[i] + un[i-1]) + 2*un[i] - un_inf[i]
     
     # Calcul de l'instant
     t_sup = (n + 1) * dt
     
-    if t_sup < 10*T:
-        # Onde centrale :
-        un_sup[int(nbx/2)] = np.cos( (2*np.pi/T * t_sup) ) * np.exp( -(t_sup - 3.6*T)**2 / (1.1*T)**2 )
+    if t_sup < 25*T:
+        # Onde venant de la gauche :
+        un_sup[0] = np.cos( (2*np.pi/T * t_sup) ) * np.exp( -(t_sup - 10*T)**2 / (4*T)**2 )
     else:
         # Pour que l'onde parte à l'infini à gauche
         un_sup[0] = un[1]
@@ -92,20 +97,23 @@ def animate(n):
 ani = animation.FuncAnimation(fig, func = animate, frames = nbt, interval = 3, repeat = False)
 
 # Coefficients de Fresnel
-print("Coefficients de Fresnel :")
+print("\n-----------------------\nCoefficients de Fresnel\n-----------------------")
 r = (1 - n_milieu)/(1 + n_milieu) # Négatif si les max deviennent des min
 t = (2*1) / (1 + n_milieu)
-print("Interface air/milieu : r = ", r, " t = ", t)
+print("\nInterface air/milieu : r = ", r, " t = ", t)
 
 r = (n_milieu -1)/(1 + n_milieu)
 t = (2 * n_milieu) / (1 + n_milieu)
-print("Interface milieu/air : r = ", r, " t = ", t, "\n\n")
+print("Interface milieu/air : r = ", r, " t = ", t, "\n")
 
 """
 Calcul des coefficients C1 et C2 tels que :
     k_num = C1/dx
     Vphase_num = C2*c
 """
+
+print("\n--------------------\nGrandeurs numériques\n--------------------")
+
 C1 = 2 * np.arcsin(np.sin(np.pi*S/N_lambda)/S)
 C2 = 2 * np.pi/(lambda_0*(C1/dx))
 print("k_numérique = ", C1, "/dx")
@@ -113,6 +121,11 @@ print("vPhase_numérique = ", C2, ".c\n\n soit\n")
 
 print("k_numérique = ", C1/dx, " Vphase_numérique = ", C2*c)
 print("L'erreur sur la vitesse de phase est de : ", (1-C2)*100, " %")
+
+lambda_milieu_exp = (2 * np.pi * (c/n_milieu)) / ( (C1/dx) * C2*c)
+
+print("\n\nLa longueur d'onde dans le milieu est : ", lambda_milieu_exp)
+print("Le rapport des longueurs d'onde est : lambda_0/lambda_milieu = ", lambda_0/lambda_milieu_exp)
 
 plt.show()
 

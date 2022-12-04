@@ -9,6 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+epsilon = np.finfo(float).eps
+
 # Constantes :
 c = 2.99792458e8
 lambda_0 = 1.55e-6
@@ -78,6 +80,9 @@ Calcul des coefficients C1 et C2 tels que :
     k_num = C1/dx
     Vphase_num = C2*c
 """
+
+print("\n--------------------\nGrandeurs numériques\n--------------------")
+
 C1 = 2 * np.arcsin(np.sin(np.pi*S/N_lambda)/S)
 C2 = 2 * np.pi/(lambda_0*(C1/dx))
 print("k_numérique = ", C1, "/dx")

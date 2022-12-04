@@ -9,6 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+epsilon = np.finfo(float).eps
+
 # Constantes :
 c = 2.99792458e8
 lambda_0 = 1.55e-6
@@ -92,20 +94,23 @@ def animate(n):
 ani = animation.FuncAnimation(fig, func = animate, frames = nbt, interval = 3, repeat = False)
 
 # Coefficients de Fresnel
-print("Coefficients de Fresnel :")
+print("\n-----------------------\nCoefficients de Fresnel\n-----------------------")
 r = (1 - n_milieu)/(1 + n_milieu) # Négatif si les max deviennent des min
 t = (2*1) / (1 + n_milieu)
-print("Interface air/milieu : r = ", r, " t = ", t)
+print("\nInterface air/milieu : r = ", r, " t = ", t)
 
 r = (n_milieu -1)/(1 + n_milieu)
-t = 2 * n_milieu / (1 + n_milieu)
-print("Interface milieu/air : r = ", r, " t = ", t, "\n\n")
+t = (2 * n_milieu) / (1 + n_milieu)
+print("Interface milieu/air : r = ", r, " t = ", t, "\n")
 
 """
 Calcul des coefficients C1 et C2 tels que :
     k_num = C1/dx
     Vphase_num = C2*c
 """
+
+print("\n--------------------\nGrandeurs numériques\n--------------------")
+
 C1 = 2 * np.arcsin(np.sin(np.pi*S/N_lambda)/S)
 C2 = 2 * np.pi/(lambda_0*(C1/dx))
 print("k_numérique = ", C1, "/dx")

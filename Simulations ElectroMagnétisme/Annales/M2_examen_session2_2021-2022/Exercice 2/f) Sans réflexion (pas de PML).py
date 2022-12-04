@@ -72,8 +72,15 @@ def animate(n):
     # Calcul de l'instant
     t_sup = (n + 1) * dt
     
-    # Onde venant de la gauche :
-    un_sup[0] = np.cos( (2*np.pi/T * t_sup) ) * np.exp( -(t_sup - 8.2*T)**2 / (3.2*T)**2 )
+    if t_sup < 20*T:
+        # Onde venant de la gauche :
+        un_sup[0] = np.cos( (2*np.pi/T * t_sup) ) * np.exp( -(t_sup - 8.2*T)**2 / (3.2*T)**2 )
+    else:
+        # Pour que l'onde parte à l'infini à gauche
+        un_sup[0] = un[1]
+    
+    # Pour que l'onde parte à l'infini à droite
+    un_sup[nbx-1] = un[nbx-2] 
 
     line.set_data(x, un_sup)
     
@@ -85,23 +92,26 @@ def animate(n):
 ani = animation.FuncAnimation(fig, func = animate, frames = nbt, interval = 3, repeat = False)
 
 # Coefficients de Fresnel
-print("Coefficients de Fresnel :")
+print("\n-----------------------\nCoefficients de Fresnel\n-----------------------")
 r = (1 - n_milieu)/(1 + n_milieu) # Négatif si les max deviennent des min
 t = (2*1) / (1 + n_milieu)
-print("Interface air/milieu : r = ", r, " t = ", t)
+print("\nInterface air/milieu : r = ", r, " t = ", t)
 
 r = (n_milieu -1)/(1 + n_milieu)
 t = (2 * n_milieu) / (1 + n_milieu)
-print("Interface milieu/air : r = ", r, " t = ", t, "\n\n")
+print("Interface milieu/air : r = ", r, " t = ", t, "\n")
 
 """
 Calcul des coefficients C1 et C2 tels que :
     k_num = C1/dx
     Vphase_num = C2*c
 """
+
+print("\n--------------------\nGrandeurs numériques\n--------------------")
+
 C1 = 2 * np.arcsin(np.sin(np.pi*S/N_lambda)/S)
 C2 = 2 * np.pi/(lambda_0*(C1/dx))
-print("k_numérique = ", C1, "/dx")
+print("\nk_numérique = ", C1, "/dx")
 print("vPhase_numérique = ", C2, ".c\n\n soit\n")
 
 print("k_numérique = ", C1/dx, " Vphase_numérique = ", C2*c)

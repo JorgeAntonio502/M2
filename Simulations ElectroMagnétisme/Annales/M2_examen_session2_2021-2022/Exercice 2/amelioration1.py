@@ -6,17 +6,19 @@ Created on Sat Nov 19 14:19:14 2022
 """
 
 """
-Amélioration sur N_lambda
+Amélioration sur S
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+epsilon = np.finfo(float).eps
+
 # Constantes :
 c = 2.99792458e8
 lambda_0 = 1.55e-6
-N_lambda = 20
+N_lambda = 11
 eps_air = 1 
 T = lambda_0 / c
 
@@ -33,7 +35,7 @@ plt.ylim(-2, 2)
 
 # Pas et facteur de stabilité
 dx = lambda_0 / N_lambda
-S = 0.7
+S = 1
 dt = (S * dx) / c
 
 # Valeurs abscisses
@@ -76,6 +78,9 @@ Calcul des coefficients C1 et C2 tels que :
     k_num = C1/dx
     Vphase_num = C2*c
 """
+
+print("\n--------------------\nGrandeurs numériques\n--------------------")
+
 C1 = 2 * np.arcsin(np.sin(np.pi*S/N_lambda)/S)
 C2 = 2 * np.pi/(lambda_0*(C1/dx))
 print("k_numérique = ", C1, "/dx")

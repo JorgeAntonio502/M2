@@ -101,27 +101,31 @@ def animate(n):
 ani = animation.FuncAnimation(fig, func = animate, frames = nbt, interval = 3, repeat = False)
 
 # Coefficients de Fresnel
-print("Coefficients de Fresnel :")
+print("\n-----------------------\nCoefficients de Fresnel\n-----------------------")
+
 r = (1 - n_milieu1)/(1 + n_milieu1) # Négatif si les max deviennent des min
 t = (2*1) / (1 + n_milieu1)
-print("Interface air/milieu1 : r = ", r, " t = ", t)
+print("Interface air/milieu1 : \nr = ", r, "\nt = ", t)
 
 r = (n_milieu1 - n_milieu2)/(n_milieu1 + n_milieu2)
 t = (2 * n_milieu1) / (n_milieu1 + n_milieu2)
-print("Interface milieu1/milieu2 : r = ", r, " t = ", t)
+print("\nInterface milieu1/milieu2 : \nr = ", r, "\nt = ", t)
 
 r = (n_milieu2 -1)/(1 + n_milieu2)
 t = (2 * n_milieu2) / (1 + n_milieu2)
-print("Interface milieu2/air : r = ", r, " t = ", t, "\n\n")
+print("\nInterface milieu2/air : \nr = ", r, "\nt = ", t, "\n")
 
 """
 Calcul des coefficients C1 et C2 tels que :
     k_num = C1/dx
     Vphase_num = C2*c
 """
+
+print("\n--------------------\nGrandeurs numériques\n--------------------")
+
 C1 = 2 * np.arcsin(np.sin(np.pi*S/N_lambda)/S)
 C2 = 2 * np.pi/(lambda_0*(C1/dx))
-print("k_numérique = ", C1, "/dx")
+print("\nk_numérique = ", C1, "/dx")
 print("vPhase_numérique = ", C2, ".c\n\n soit\n")
 
 print("k_numérique = ", C1/dx, " Vphase_numérique = ", C2*c)
