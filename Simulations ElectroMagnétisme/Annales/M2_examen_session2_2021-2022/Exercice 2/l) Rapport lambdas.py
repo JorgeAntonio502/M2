@@ -9,12 +9,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+epsilon = np.finfo(float).eps
+
 # Constantes :
 c = 2.99792458e8
 lambda_0 = 1.55e-6
 N_lambda = 34
 eps_air = 1 
 T = lambda_0 / c
+k_0 = (2*np.pi)/(T*c)
 
 # Creation limites figure
 fig = plt.figure()
@@ -63,8 +66,43 @@ un_inf = np.zeros(nbx)
 un = np.zeros(nbx)
 un_sup = np.zeros(nbx)
 
+# Variables pour mesure des paquets d'onde
+# tableaux : 
+#[indice position, instant début passage, insant fin passage] = [int, temps(s), temps(s)]
 
-def animate(n):
+Air = [0, 0., 0.] # Dans l'air
+Milieu = [0, 0., 0.] # Dans le milieu
+
+intervalle_air = 0
+transition_milieux2 = 0
+
+# Détermination des points de calcul
+for i in range(nbx):
+    if(eps_r[i] != 1):
+        intervalle_air = i-1
+        break
+
+for j in range(intervalle_air+1, nbx):
+    if(eps_r[j] != n_milieu**2):
+        transition_milieux2 = j
+        break
+    
+intervalle_milieu = transition_milieux2 - intervalle_air
+                              
+Air[0] = int(intervalle_air/7)
+
+Milieu[0] = int(transition_milieux2 - 6*intervalle_milieu/7)
+
+
+
+print("\n--------------------\nPoints de mesure (m)\n--------------------")
+print("\nDans l'air : \nx = ", Air[0]*dx)
+print("Dans le milieu : \nx' = ", Milieu[0]*dx,"\n")
+
+print("\nDébut simulation\n")
+
+# Boucle temporelle principale
+for n in range(int(nbt/2)):
     
     for i in range(nbx-1):
         un_sup[i] = ( S**2/eps_r[i] ) * (un[i+1] - 2*un[i] + un[i-1]) + 2*un[i] - un_inf[i]
@@ -72,43 +110,57 @@ def animate(n):
     # Calcul de l'instant
     t_sup = (n + 1) * dt
     
+    # Détections passage de l'onde dans l'air
+    if un_sup[Air[0]] > epsilon and Air[1] == 0:
+        Air[1] = t_sup - dt
+        print("Mesure 1 dans l'air effectuée\n")
+    if un_sup[Air[0]] < epsilon and Air[2] == 0 and Air[1] != 0:
+        Air[2] = t_sup - dt
+        print("Mesure 2 dans l'air effectuée\n")
+        
+    # Détection passe de l'onde dans le milieu    
+    if un_sup[Milieu[0]] > epsilon and Milieu[1] == 0:
+        Milieu[1] = t_sup - dt
+        print("Mesure 1 dans le milieu effectuée\n")    
+    if un_sup[Milieu[0]] < epsilon and Milieu[2] == 0 and Milieu[1] != 0:
+        Milieu[2] = t_sup - dt
+        print("Mesure 2 dans le milieu effectuée\n")
+    
     # Onde venant de la gauche :
     un_sup[0] = np.cos( (2*np.pi/T * t_sup) ) * np.exp( -(t_sup - 8.2*T)**2 / (3.2*T)**2 )
-
-    line.set_data(x, un_sup)
     
     un_inf[:] = un[:]
     un[:] = un_sup[:]
-    
-    return line,
 
-ani = animation.FuncAnimation(fig, func = animate, frames = nbt, interval = 3, repeat = False)
+print("Fin simulation\n\n")
 
-# Coefficients de Fresnel
-print("\n-----------------------\nCoefficients de Fresnel\n-----------------------")
-r = (1 - n_milieu)/(1 + n_milieu) # Négatif si les max deviennent des min
-t = (2*1) / (1 + n_milieu)
-print("\nInterface air/milieu : r = ", r, " t = ", t)
+print("---------------------\nRésultats mesures (s)\n---------------------")
 
-r = (n_milieu -1)/(1 + n_milieu)
-t = (2 * n_milieu) / (1 + n_milieu)
-print("Interface milieu/air : r = ", r, " t = ", t, "\n")
+print("\nL'onde est passée \npar x à t1 = ", Air[1], "\n et est partie à t2 = ", Air[2])
+print("\nL'onde est passée \npar x' à t'1 = ", Milieu[1], "\n et est partie à t'2 = ", Milieu[2], "\n")
 
-"""
-Calcul des coefficients C1 et C2 tels que :
-    k_num = C1/dx
-    Vphase_num = C2*c
-"""
-
-print("\n--------------------\nGrandeurs numériques\n--------------------")
-
+# Vitesse numérique air
 C1 = 2 * np.arcsin(np.sin(np.pi*S/N_lambda)/S)
 C2 = 2 * np.pi/(lambda_0*(C1/dx))
-print("k_numérique = ", C1, "/dx")
-print("vPhase_numérique = ", C2, ".c\n\n soit\n")
+vph_num = C2*c
 
-print("k_numérique = ", C1/dx, " Vphase_numérique = ", C2*c)
-print("L'erreur sur la vitesse de phase est de : ", (1-C2)*100, " %")
+# Vitesse numérique dans milieu
+vph_num_milieu = vph_num/n_milieu
+
+# Calcul longeurs des paquets dans air et milieu 
+paquet_air = (Air[2]-Air[1]) * vph_num
+paquet_milieu = (Milieu[2]-Milieu[1]) * vph_num_milieu
+
+print("\nLongueur paquet d'onde dans l'air : ", paquet_air)
+print("Longueur paquet d'onde dans le milieu : ", paquet_milieu)
+
+print("\nRapport des longeurs : ", paquet_air/paquet_milieu) 
+
+# Limites visuelles du point de mesure dans l'air
+plt.vlines(Air[0]*dx, -1, 1, colors='r', linestyle='dashed')
+
+# Limites visuelles du point de mesure dans le milieu
+plt.vlines(Milieu[0]*dx, -1, 1, colors='b', linestyle='dashed')
 
 plt.show()
 

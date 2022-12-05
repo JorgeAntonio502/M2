@@ -68,7 +68,7 @@ un_sup = np.zeros(nbx)
 # Variables pour mesure vitesse numérique
 # tableaux : [indice position, instant de passage] = [int, temps(s)]
 
-Air1 = [70, 0.] # Dans l'air
+Air1 = [0, 0.] # Dans l'air
 Air2 = [0, 0.] 
 
 Milieu1 = [0, 0.] # Dans le milieu

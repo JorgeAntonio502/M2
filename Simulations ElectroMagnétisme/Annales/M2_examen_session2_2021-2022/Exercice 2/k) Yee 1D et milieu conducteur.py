@@ -16,6 +16,7 @@ N_lambda = 20
 mu0 = np.pi*4e-7 # SI
 eps0 = 1/(mu0*c**2) # SI
 T = lambda_0 / c # T de source dans le vide de longueur d'onde lambda_0
+k_0 = (2*np.pi)/(T*c)
 
 # Pas et facteur de stabilité
 dx = lambda_0 / N_lambda
@@ -119,20 +120,39 @@ def animate(n):
  
 ani = animation.FuncAnimation(fig, animate, frames=nbt, blit=True, interval=1, repeat=False)
 
+print("\n-----------------------------\nParamètres Milieu conducteur\n-----------------------------")
+
+delta = np.sqrt( T/(np.pi*mu0*sigma_milieu))
+                
+print("conductivité : epsilon = ", sigma_milieu)
+print("Largeur : ", largeur_milieu/lambda_0, "lambda_0")
+print("Epaisseur de peau : delta = sqrt( T/(np.pi*mu_0*sigma_milieu) ) ) =", delta/lambda_0 , "lambda_0")
+
+print("\n-----------------------\nGrandeurs numériques\n-----------------------")
+
 """
 Calcul des coefficients C1 et C2 tels que :
     k_num = C1/dx
     Vphase_num = C2*c
 """
 
-print("\n--------------------\nGrandeurs numériques\n--------------------")
-
 C1 = 2 * np.arcsin(np.sin(np.pi*S/N_lambda)/S)
 C2 = 2 * np.pi/(lambda_0*(C1/dx))
-print("k_numérique = ", C1, "/dx")
-print("vPhase_numérique = ", C2, ".c\n\n soit\n")
+print("\nRésolution spatiale : N_lambda = ", N_lambda)
+print("Facteur de stabilité : S = ", S)
+print("\nk_numérique = ", C1, "/dx")
+print("vPhase_numérique = ", C2, "c\n\n soit\n")
 
-print("k_numérique = ", C1/dx, " Vphase_numérique = ", C2*c)
-print("L'erreur sur la vitesse de phase est de : ", (1-C2)*100, " %")
+k_num = C1/dx
+vph_num = C2*c
+N_tr = (np.pi*S)/(2*np.arcsin(S))
+
+print("k_numérique = ", k_num, " Vphase_numérique = ", vph_num)
+
+vph_error = (c-vph_num)/c
+
+print("\nLe rapport des vecteurs k_numérique et k_0 est : k_num/k_0 = ", ((C1/dx) / k_0))
+print("L'erreur sur la vitesse de phase est de : ", vph_error*100, " %\n")
+print("Résolution spatiale minimum pour avoir k réel : N_transition = ", N_tr)
 
 plt.show()
