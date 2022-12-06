@@ -14,7 +14,7 @@ epsilon = np.finfo(float).eps
 # Constantes :
 c = 2.99792458e8
 lambda_0 = 1.55e-6
-N_lambda = 20
+N_lambda = 25
 eps_air = 1 
 T = lambda_0 / c
 k_0 = (2*np.pi)/(T*c)
@@ -25,7 +25,7 @@ line, = plt.plot([], [])
 
 # Nombre de positions
 xmin = 0
-xmax = 12*lambda_0
+xmax = 25*lambda_0 # Augmentation du domaine
 L = xmax - xmin
 
 plt.xlim(xmin, xmax)
@@ -43,14 +43,28 @@ x = np.linspace(xmin, xmax, nbx)
 # Nombre valeurs temporelles
 nbt = int(1.7 * (xmax/lambda_0) * T / dt)
 
+# Paramètres milieu transparent
+n_milieu = 2
+lambda_milieu = lambda_0/n_milieu
+largeur_milieu = 10*lambda_0
+
+debut_milieu = L/2
+fin_milieu = L/2 + largeur_milieu/2
+
 # Tableau des constantes diaéliectriques
 eps_r = np.ones(nbx)
+for i in range(nbx):
+    if(x[i] >= debut_milieu and x[i]  <= fin_milieu):
+        eps_r[i] = n_milieu**2
+        
+# Limites visuelles du milieu
+plt.vlines(debut_milieu, -2, 2, colors='k', linestyle='dashed')
+plt.vlines(fin_milieu, -2, 2, colors='k', linestyle='dashed')
 
 # Creation tableaux des positons à t-1, t et t+1
 un_inf = np.zeros(nbx)
 un = np.zeros(nbx)
 un_sup = np.zeros(nbx)
-
 
 def animate(n):
     
@@ -60,12 +74,15 @@ def animate(n):
     # Calcul de l'instant
     t_sup = (n + 1) * dt
     
+    if t_sup < 25*T:
+        # Onde venant de la gauche :
+        un_sup[0] = np.cos( (2*np.pi/T * t_sup) ) * np.exp( -(t_sup - 10*T)**2 / (4*T)**2 )
+    else:
+        # Pour que l'onde parte à l'infini à gauche
+        un_sup[0] = un[1]
     
-    # Onde venant de la gauche :
-    un_sup[0] = np.cos( (2*np.pi/T * t_sup) ) * np.exp( -(t_sup - 8*T)**2 / (1.5*T)**2 )
-    
-    # Onde venant de la droite :
-    un_sup[nbx-1] = np.cos( (2*np.pi/T * t_sup) ) * np.exp( -(t_sup - 6*T)**2 / (2*T)**2 )
+    # Pour que l'onde parte à l'infini à droite
+    un_sup[nbx-1] = un[nbx-2] 
 
     line.set_data(x, un_sup)
     
@@ -75,6 +92,22 @@ def animate(n):
     return line,
 
 ani = animation.FuncAnimation(fig, func = animate, frames = nbt, interval = 3, repeat = False)
+    
+
+print("\n------------------\nParamètres Milieu\n------------------")
+print("n = ", n_milieu)
+print("Longueur d'onde dans le milieu : lambda = ", lambda_milieu/lambda_0, "lambda0")
+print("Largeur : ", largeur_milieu/lambda_0, "lambda_0\n")
+
+# Coefficients de Fresnel
+print("\n-----------------------\nCoefficients de Fresnel\n-----------------------")
+r = (1 - n_milieu)/(1 + n_milieu) # Négatif si les max deviennent des min
+t = (2*1) / (1 + n_milieu)
+print("\nInterface air/milieu : r = ", r, " t = ", t)
+
+r = (n_milieu -1)/(1 + n_milieu)
+t = (2 * n_milieu) / (1 + n_milieu)
+print("Interface milieu/air : r = ", r, " t = ", t, "\n")
 
 print("\n-----------------------\nGrandeurs numériques\n-----------------------")
 

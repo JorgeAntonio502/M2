@@ -9,12 +9,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+epsilon = np.finfo(float).eps
+
 # Constantes :
 c = 2.99792458e8
 lambda_0 = 1.55e-6
 N_lambda = 20
 eps_air = 1 
 T = lambda_0 / c
+k_0 = (2*np.pi)/(T*c)
 
 # Creation limites figure
 fig = plt.figure()
@@ -78,21 +81,32 @@ def animate(n):
 
 ani = animation.FuncAnimation(fig, func = animate, frames = nbt, interval = 3, repeat = False)
 
+print("\n-----------------------\nGrandeurs numériques\n-----------------------")
+
 """
 Calcul des coefficients C1 et C2 tels que :
     k_num = C1/dx
     Vphase_num = C2*c
 """
 
-print("\n--------------------\nGrandeurs numériques\n--------------------")
-
 C1 = 2 * np.arcsin(np.sin(np.pi*S/N_lambda)/S)
 C2 = 2 * np.pi/(lambda_0*(C1/dx))
-print("k_numérique = ", C1, "/dx")
-print("vPhase_numérique = ", C2, ".c\n\n soit\n")
+print("\nRésolution spatiale : N_lambda = ", N_lambda)
+print("Facteur de stabilité : S = ", S)
+print("\nk_numérique = ", C1, "/dx")
+print("vPhase_numérique = ", C2, "c\n\n soit\n")
 
-print("k_numérique = ", C1/dx, " Vphase_numérique = ", C2*c)
-print("L'erreur sur la vitesse de phase est de : ", (1-C2)*100, " %")
+k_num = C1/dx
+vph_num = C2*c
+N_tr = (np.pi*S)/(2*np.arcsin(S))
+
+print("k_numérique = ", k_num, " Vphase_numérique = ", vph_num)
+
+vph_error = (c-vph_num)/c
+
+print("\nLe rapport des vecteurs k_numérique et k_0 est : k_num/k_0 = ", ((C1/dx) / k_0))
+print("L'erreur sur la vitesse de phase est de : ", vph_error*100, " %\n")
+print("Résolution spatiale minimum pour avoir k réel : N_transition = ", N_tr)
 
 plt.show()
 
