@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-epsilon = np.finfo(float).eps
+epsilon = 10e-5
 
 # Constantes :
 c = 2.99792458e8
@@ -65,14 +65,57 @@ plt.vlines(fin_milieu, -2, 2, colors='k', linestyle='dashed')
 un_inf = np.zeros(nbx)
 un = np.zeros(nbx)
 un_sup = np.zeros(nbx)   
+
+# Détermination des tailles des milieux
+transition1 = 0
+transition2 = 0
+
+for i in range(nbx):
+    if(eps_r[i] != 1):
+        transition1 = i-1
+        break
+
+for j in range(transition1+1, nbx):
+    if(eps_r[j] != n_milieu**2):
+        transition2 = j
+        break
     
-def animate(n):
+intervalle_air_milieu = transition1
+intervalle_milieu_air = transition2 - transition1
+
+# Définition des points de mesure
+x_air = int(intervalle_air_milieu/10)
+t1_air = 0
+t2_air = 0
+
+x_milieu = int(transition1 + intervalle_milieu_air/10)
+t1_milieu = 0
+t2_milieu = 0
+    
+# Boucle temporelle principale
+for n in range(int(nbt/2)):
     
     for i in range(nbx-1):
         un_sup[i] = ( S**2/eps_r[i] ) * (un[i+1] - 2*un[i] + un[i-1]) + 2*un[i] - un_inf[i]
     
     # Calcul de l'instant
     t_sup = (n + 1) * dt
+    
+    # Mesures de temps dans l'air
+    if un_sup[x_air] > epsilon and t1_air == 0:
+        t1_air = t_sup - dt
+        print("Mesure 1 dans l'air effectuée\n")
+    if un_sup[x_air] < 0 and un_sup[x_air] > -epsilon and t2_air == 0:
+        t2_air = t_sup - dt
+        print("Mesure 2 dans l'air effectuée\n")
+        
+    # Mesures de temps dans le milieu
+    if un_sup[x_milieu] > epsilon and t1_milieu == 0:
+        t1_milieu = t_sup - dt
+        print("Mesure 1 dans le milieu effectuée\n")
+    if un_sup[x_milieu] < 0 and un_sup[x_milieu] > -epsilon and t2_milieu == 0:
+        t2_milieu = t_sup - dt
+        print("Mesure 2 dans le milieu effectuée\n")
     
     if t_sup < 25*T:
         # Onde venant de la gauche :
@@ -83,57 +126,41 @@ def animate(n):
     
     # Pour que l'onde parte à l'infini à droite
     un_sup[nbx-1] = un[nbx-2] 
-
-    line.set_data(x, un_sup)
     
     un_inf[:] = un[:]
     un[:] = un_sup[:]
     
-    return line,
 
-ani = animation.FuncAnimation(fig, func = animate, frames = nbt, interval = 3, repeat = False)
+print("Fin simulation\n\n")
+    
+print("---------------------\nRésultats mesures (s)\n---------------------")
 
-print("\n------------------\nParamètres Milieu\n------------------")
-print("n = ", n_milieu)
-print("Longueur d'onde dans le milieu : lambda = ", lambda_milieu/lambda_0, "lambda0")
-print("Largeur : ", largeur_milieu/lambda_0, "lambda_0\n")
+print("\nL'onde est passée : \n\npar x1 à t1 = ", t1_air, "\npar x2 à t2 = ", t2_air)
+print("\npar x'1 à t'1 = ", t1_milieu, "\npar x'2 à t'2 = ", t2_milieu, "\n")
 
-# Coefficients de Fresnel
-print("\n-----------------------\nCoefficients de Fresnel\n-----------------------")
-r = (1 - n_milieu)/(1 + n_milieu) # Négatif si les max deviennent des min
-t = (2*1) / (1 + n_milieu)
-print("\nInterface air/milieu : r = ", r, " t = ", t)
-
-r = (n_milieu -1)/(1 + n_milieu)
-t = (2 * n_milieu) / (1 + n_milieu)
-print("Interface milieu/air : r = ", r, " t = ", t, "\n")
-
-print("\n-----------------------\nGrandeurs numériques\n-----------------------")
-
-"""
-Calcul des coefficients C1 et C2 tels que :
-    k_num = C1/dx
-    Vphase_num = C2*c
-"""
-
+# Vitesses de phases numériques
 C1 = 2 * np.arcsin(np.sin(np.pi*S/N_lambda)/S)
 C2 = 2 * np.pi/(lambda_0*(C1/dx))
-print("\nRésolution spatiale : N_lambda = ", N_lambda)
-print("Facteur de stabilité : S = ", S)
-print("\nk_numérique = ", C1, "/dx")
-print("vPhase_numérique = ", C2, "c\n\n soit\n")
 
-k_num = C1/dx
-vph_num = C2*c
-N_tr = (np.pi*S)/(2*np.arcsin(S))
+vph_num_air = C2*c
+vph_num_milieu = vph_num_air/n_milieu
 
-print("k_numérique = ", k_num, " Vphase_numérique = ", vph_num)
+# Calcul de la distance dans les milieux
+L_air = ((t2_air - t1_air)*dx) * vph_num_air
+L_milieu = ((t2_milieu - t1_milieu)*dx) * vph_num_milieu
 
-vph_error = (c-vph_num)/c
+print("----------------------\nLongueurs mesurées m\n----------------------")
 
-print("\nLe rapport des vecteurs k_numérique et k_0 est : k_num/k_0 = ", ((C1/dx) / k_0))
-print("L'erreur sur la vitesse de phase est de : ", vph_error*100, " %\n")
-print("Résolution spatiale minimum pour avoir k réel : N_transition = ", N_tr)
+print("\nDans l'air : L_air = ", L_air)
+print("\nDans le milieu : L_milieu = ", L_milieu)
+print("\n\n => Rapport : n = L_air/L_milieu = ", L_air/L_milieu)
+
+
+# Limites visuelles des points de mesure dans l'air
+plt.vlines(x_air*dx, -1, 1, colors='r', linestyle='dashed')
+
+# Limites visuelles des points de mesure dans le milieu
+plt.vlines(x_milieu*dx, -1, 1, colors='b', linestyle='dashed')
 
 plt.show()
 

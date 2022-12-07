@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-epsilon = np.finfo(float).eps
+epsilon = 10e-5
 
 # Constantes :
 c = 2.99792458e8
@@ -17,6 +17,7 @@ lambda_0 = 1.55e-6
 N_lambda = 25
 eps_air = 1 
 T = lambda_0 / c
+k_0 = (2*np.pi)/(T*c)
 
 # Creation limites figure
 fig = plt.figure()
@@ -65,35 +66,36 @@ un_inf = np.zeros(nbx)
 un = np.zeros(nbx)
 un_sup = np.zeros(nbx)
 
+# Détermination des tailles des milieux
+transition1 = 0
+transition2 = 0
+
+for i in range(nbx):
+    if(eps_r[i] != 1):
+        transition1 = i-1
+        break
+
+for j in range(transition1+1, nbx):
+    if(eps_r[j] != n_milieu**2):
+        transition2 = j
+        break
+    
+intervalle_air_milieu = transition1
+intervalle_milieu_air = transition2 - transition1
+
 # Variables pour mesure vitesse numérique
 # tableaux : [indice position, instant de passage] = [int, temps(s)]
 
-Air1 = [5, 0] # Dans l'air
+Air1 = [0, 0] # Dans l'air
 Air2 = [0, 0] 
 
 Milieu1 = [0, 0] # Dans le milieu
 Milieu2 = [0, 0]
-
-# Détermination des points de calcul
-for i in range(nbx):
-    if(eps_r[i] != 1):
-        Air2[0] = i-5
-        Milieu1[0] = i+5
-        break
-
-for j in range(Milieu1[0]+1, nbx):
-    if(eps_r[j] != n_milieu**2):
-        Milieu2[0] = j-5
-        break
-
-intervalle_air = Air2[0]-Air1[0]
-intervalle_milieu = Milieu2[0] - Milieu1[0]
                               
-Air1[0] = int(intervalle_air/6)
-Air2[0] = int(3*intervalle_air/4)
-
-Milieu1[0] = int(Milieu1[0] + intervalle_milieu/4)
-Milieu2[0] = int(Milieu2[0] - intervalle_milieu/4)
+Air1[0] = int(intervalle_air_milieu/10)
+Air2[0] = int(9*intervalle_air_milieu/10)
+Milieu1[0] = int(transition1 + intervalle_milieu_air/10)
+Milieu2[0] = int(transition1 + 9*intervalle_milieu_air/10)
     
 print("\n--------------------\nPoints de mesure (m)\n--------------------")
 print("\nDans l'air : \nx1 = ", Air1[0]*dx, "\nx2 = ", Air2[0]*dx, "\n")
@@ -109,15 +111,7 @@ for n in range(nbt):
     
     # Calcul de l'instant
     t_sup = (n + 1) * dt
-        
-    # Suppression des réflexions
-    if t_sup < 25*T:
-        # Onde venant de la gauche :
-        un_sup[0] = np.cos( (2*np.pi/T * t_sup) ) * np.exp( -(t_sup - 10*T)**2 / (4*T)**2 )
-    else:
-        # Pour que l'onde parte à l'infini à gauche
-        un_sup[0] = un[1]
-        
+    
     # Détections passage de l'onde dans l'air
     if un_sup[Air1[0]] > epsilon and Air1[1] == 0:
         Air1[1] = t_sup - dt
@@ -133,6 +127,14 @@ for n in range(nbt):
     if un_sup[Milieu2[0]] > epsilon and Milieu2[1] == 0:
         Milieu2[1] = t_sup - dt
         print("Mesure 2 dans le milieu effectuée\n")
+        
+    # Suppression des réflexions
+    if t_sup < 25*T:
+        # Onde venant de la gauche :
+        un_sup[0] = np.cos( (2*np.pi/T * t_sup) ) * np.exp( -(t_sup - 10*T)**2 / (4*T)**2 )
+    else:
+        # Pour que l'onde parte à l'infini à gauche
+        un_sup[0] = un[1]
     
     # Pour que l'onde parte à l'infini à droite
     un_sup[nbx-1] = un[nbx-2] 

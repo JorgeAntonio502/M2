@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-epsilon = np.finfo(float).eps
+epsilon = 10e-5
 
 # Constantes :
 c = 2.99792458e8
@@ -17,6 +17,7 @@ lambda_0 = 1.55e-6
 N_lambda = 34
 eps_air = 1 
 T = lambda_0 / c
+k_0 = (2*np.pi)/(T*c)
 
 # Creation limites figure
 fig = plt.figure()
@@ -65,37 +66,37 @@ un_inf = np.zeros(nbx)
 un = np.zeros(nbx)
 un_sup = np.zeros(nbx)
 
+# Détermination des tailles des milieux
+transition1 = 0
+transition2 = 0
+
+for i in range(nbx):
+    if(eps_r[i] != 1):
+        transition1 = i-1
+        break
+
+for j in range(transition1+1, nbx):
+    if(eps_r[j] != n_milieu**2):
+        transition2 = j
+        break
+    
+intervalle_air_milieu = transition1
+intervalle_milieu_air = transition2 - transition1
+
 # Variables pour mesure vitesse numérique
 # tableaux : [indice position, instant de passage] = [int, temps(s)]
 
-Air1 = [0, 0.] # Dans l'air
-Air2 = [0, 0.] 
+Air1 = [0, 0] # Dans l'air
+Air2 = [0, 0] 
 
-Milieu1 = [0, 0.] # Dans le milieu
-Milieu2 = [0, 0.]
-
-# Détermination des points de calcul (Limites des milieux)
-for i in range(nbx):
-    if(eps_r[i] != 1):
-        Air2[0] = i-1
-        Milieu1[0] = i
-        break
-
-for j in range(Milieu1[0], nbx):
-    if(eps_r[j] != n_milieu**2):
-        Milieu2[0] = j
-        break
-    
-intervalle_air = Air2[0]-Air1[0]
-intervalle_milieu = Milieu2[0] - Milieu1[0]
+Milieu1 = [0, 0] # Dans le milieu
+Milieu2 = [0, 0]
                               
-Air1[0] = int(intervalle_air/3)
-Air2[0] = int(2*intervalle_air/3)
-
-Milieu1[0] = int(Milieu1[0] + intervalle_milieu/3)
-Milieu2[0] = int(Milieu2[0] - intervalle_milieu/3)
-
-
+Air1[0] = int(intervalle_air_milieu/10)
+Air2[0] = int(9*intervalle_air_milieu/10)
+Milieu1[0] = int(transition1 + intervalle_milieu_air/10)
+Milieu2[0] = int(transition1 + 9*intervalle_milieu_air/10)
+    
 print("\n--------------------\nPoints de mesure (m)\n--------------------")
 print("\nDans l'air : \nx1 = ", Air1[0]*dx, "\nx2 = ", Air2[0]*dx, "\n")
 print("Dans le milieu : \nx'1 = ", Milieu1[0]*dx, "\nx'2 = ", Milieu2[0]*dx, "\n")
@@ -103,7 +104,7 @@ print("Dans le milieu : \nx'1 = ", Milieu1[0]*dx, "\nx'2 = ", Milieu2[0]*dx, "\n
 print("\nDébut simulation\n")
 
 # Boucle temporelle principale
-for n in range(int(nbt/2)):
+for n in range(nbt):
     
     for i in range(nbx-1):
         un_sup[i] = ( S**2/eps_r[i] ) * (un[i+1] - 2*un[i] + un[i-1]) + 2*un[i] - un_inf[i]
@@ -141,14 +142,14 @@ print("\nL'onde est passée : \n\npar x1 à t1 = ", Air1[1], "\npar x2 à t2 = "
 print("\npar x'1 à t'1 = ", Milieu1[1], "\npar x'2 à t'2 = ", Milieu2[1], "\n")
 
 # Calcul de la vitesse dans le milieu
-v_air = ((Air2[0] - Air1[0])*dx) / (Air2[1] - Air1[1])
-v_milieu = ((Milieu2[0] - Milieu1[0])*dx) / (Milieu2[1] - Milieu1[1])
+v_air = (Air2[0] - Air1[0])*dx / (Air2[1] - Air1[1])
+v_milieu = (Milieu2[0] - Milieu1[0])*dx / (Milieu2[1] - Milieu1[1])
 
 print("-------------------------\nVitesses numériques (m/s)\n-------------------------")
 
 print("\nDans l'air : v_air = ", v_air)
 print("\nDans le milieu : v_milieu = ", v_milieu)
-print("\n\n => Rapport : n = v_air/v_milieu = ", v_air/v_milieu)
+print("\n\n => Rapport : v_air/v_milieu = ", v_air/v_milieu)
 
 # Limites visuelles des points de mesure dans l'air
 plt.vlines(Air1[0]*dx, -1, 1, colors='r', linestyle='dashed')
