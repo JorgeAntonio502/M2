@@ -25,7 +25,7 @@ line, = plt.plot([], [])
 
 # Nombre de positions
 xmin = 0
-xmax = 25*lambda_0 # Augmentation du domaine
+xmax = 50*lambda_0 # Augmentation du domaine
 L = xmax - xmin
 
 plt.xlim(xmin, xmax)
@@ -48,7 +48,7 @@ n_milieu = 2
 lambda_milieu = lambda_0/n_milieu
 largeur_milieu = 10*lambda_0
 
-debut_milieu = L/2
+debut_milieu = L/2 - largeur_milieu/2
 fin_milieu = L/2 + largeur_milieu/2
 
 # Tableau des constantes diaéliectriques
