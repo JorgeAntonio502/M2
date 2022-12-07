@@ -88,8 +88,8 @@ omega = 2.0*np.pi*freq
 #     Grid parameters
 #***********************************************************************
 
-im = 251           #nombre de noeuds pour hz dans la direction x
-jm = 150            #nombre de noeuds pour hz dans la direction y
+im = 151           #nombre de noeuds pour hz dans la direction x
+jm = 81            #nombre de noeuds pour hz dans la direction y
 
 #calcul des bornes supérieures pour i et j quand les indices débutent à 1
 ie = im+1
@@ -129,14 +129,15 @@ jbfbc = jefbc+1
 #     Material parameters
 #***********************************************************************
 
-media = 2
+media = 3
 
 indice_cylindre = 2.2
 
-eps = [1.0, indice_cylindre**2]
-sig = [0.0, 0]
-mur = [1.0, 1.0]
-sim = [0.0, 0.0]
+# Chaque colonne correspond à un milieu (air, cylindre1, cylindre2)
+eps = [1.0, indice_cylindre**2, indice_cylindre**2]
+sig = [0.0, 0, 0]
+mur = [1.0, 1.0, 1.0]
+sim = [0.0, 0.0, 0.0]
 
 #***********************************************************************
 #     Wave excitation
@@ -223,19 +224,32 @@ lambda_cylindre = lambda0/indice_cylindre
 
 diam = ( 3*(lambda_cylindre)/2 ) / dx  # diameter of cylinder: lambda_cylindre/2
 rad = diam/2.0     # radius of cylinder: 3 cm
-icenter = 2*ie/3   # i-coordinate of cylinder's center
-jcenter = je/2     # j-coordinate of cylinder's center
+
+icenter1 = 2*ie/3   # i-coordinate of cylinder's center
+jcenter1 = je/2     # j-coordinate of cylinder's center
+
+icenter2 = 2*ie/3 + lambda0/dx   # i-coordinate of cylinder's center
+jcenter2 = je/2     # j-coordinate of cylinder's center
 
 for i in range(1,ie):
   for j in range(1,je):
-    dist2 = (i+0.5-icenter)**2 + (j-jcenter)**2
+    dist2 = (i+0.5-icenter1)**2 + (j-jcenter1)**2
     if dist2 <= rad**2: 
        caex[i,j] = ca[1]
        cbex[i,j] = cb[1]
-    dist2 = (i-icenter)**2 + (j+0.5-jcenter)**2
+    dist2 = (i-icenter1)**2 + (j+0.5-jcenter1)**2
     if dist2 <= rad**2: 
        caey[i,j] = ca[1]
        cbey[i,j] = cb[1]
+    dist2 = (i+0.5-icenter2)**2 + (j-jcenter2)**2
+    if dist2 <= rad**2: 
+       caex[i,j] = ca[2]
+       cbex[i,j] = cb[2]
+    dist2 = (i-icenter2)**2 + (j+0.5-jcenter2)**2
+    if dist2 <= rad**2: 
+       caey[i,j] = ca[2]
+       cbey[i,j] = cb[2]
+      
 
 #***********************************************************************
 #     Fill the PML regions
