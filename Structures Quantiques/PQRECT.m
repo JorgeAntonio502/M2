@@ -3,8 +3,8 @@ function [En] = PQRECT(V0,a,N,Lb,nmodes)
 
 	% Paramètres physiques
 	e = 1.602176565e-19;
-	a = 10.e-09;
-	a_bar = 5;
+	%a = 10.e-09;
+	%a_bar = 5;
 	m_e = 9.1091e-31;
 	m_eff = 0.067 * m_e;
 	q_e = 1.602176565e-19;

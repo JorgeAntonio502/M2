@@ -106,7 +106,7 @@ am2 = -1/12/delta^2;
 ap2 = am2;
 am1 = 4/3/delta^2;
 ap1 = am1;
-a0 = -5/2;/delta^2;
+a0 = -5/2/delta^2;
 
 nmodes = 3;
 options.disp = 0;
