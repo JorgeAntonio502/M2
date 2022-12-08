@@ -85,7 +85,7 @@ def animate(n):
     
     return line,
 
-ani = animation.FuncAnimation(fig, func = animate, frames = 1500, interval = 3, repeat = False)
+ani = animation.FuncAnimation(fig, func = animate, frames = nbt, interval = 3, repeat = False)
 
 print("\n------------------\nParamètres Milieu\n------------------")
 print("n = ", n_milieu)

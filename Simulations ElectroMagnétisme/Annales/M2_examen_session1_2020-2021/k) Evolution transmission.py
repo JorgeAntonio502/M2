@@ -167,13 +167,13 @@ print("Fin simulation\n\n")
 
 plt.plot(NB, Ratio)
 plt.xlabel("Number of layers")
-plt.ylabel("E_inc/E_trans")
+plt.ylabel("E_trans/E_inc")
 plt.title("Evolution of Tranmission with the number of layers")
 plt.show()
 
 
 plt.plot(NB, Ratio_log)
 plt.xlabel("Number of layers")
-plt.ylabel("Ln(E_inc/E_trans)")
+plt.ylabel("Ln(E_trans/E_inc)")
 plt.title("Logarithmic evolution of Tranmission with the number of layers")
 plt.show()
