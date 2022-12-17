@@ -10,11 +10,11 @@ Variables globales
 // Variables unites reduites
 float epsilon = 1.;
 float sigma = 1.;
-float K_B = 1.; //1.380649e-23;
+float K_B = 1.;//1.380649e-23;
 
 // Constantes
 const int D = 2; // Dimension du problème
-const int N = 5;  // Nombre de cycles de MC
+const int N = 500;  // Nombre de cycles de MC
 const int N_particules = 100; // Nombre de particules
 
 // Rayon et energie de coupure
@@ -22,8 +22,10 @@ double Rcut = 2.5;
 double Ucut = 4*epsilon*pow(sigma/Rcut, 12) - 4*epsilon*pow(sigma/Rcut, 6);
 
 // Parametres cristal
-float L = 9 + 2*Rcut; // taille de la boîte de simulation (carrée)
-float dl = (L-2*Rcut)/9;//pow(2,(double) 1/6) * sigma; // distance entre les molecules du cristal
+double L = 20;
+double cristal_width = sqrt(N_particules); // Nombre d'atomes le long du cristal
+double dl = L/cristal_width; // Espacement initial entre les particules
+double edge_distance = dl/2; // Distance initiale du cristal aux bords de la boîte
 double half_box = L/2;
 float T = 0.01; // Température en Kelvins
 
@@ -51,6 +53,9 @@ void compute_probability(double E_initial, double E_final, double T, double *P);
 // Validation ou non du deplacement
 void validation(double P, double E_initial, double E_final, double *nb_displacement_accepted, double *E_moy, double pos[D], double initial_position[D]);
 
+// Calcul de la somme des produits scalaires Force*distance
+double compute_sum_products(double pos[N_particules][D]);
+
 /*#########################
 Fonction principale
 #########################*/
@@ -67,20 +72,23 @@ int main()
 		exit(1);
 	}
 	
-    // ouverture fichier pour les energies
-    fp = fopen("Potential_Energy.txt", "w");
+    // ouverture fichier pour les quantittes physiques
+    fp = fopen("Physical_quantities.txt", "w");
 
     if (fp == NULL) {
 		printf("File error\n");
 		exit(1);
 	}
 	
+	// En_tetes des colonnes du fichier de sortie
+	fprintf(fp, "#Cycle\tEpot\tP\n\n");
+	
 	printf("L = %f\n\n", L);
 	
 	// Declaration constantes
     double V = L*L;
-    float norm = 1; // Longueur max des deplacements selon x et y
-    float P_tentative = 1/N; // Proba de tenter de deplacer 1 particule 
+    float norm = 1.; // Longueur max des deplacements selon x et y
+    float P_tentative = 1.;///N_particules; // Proba de tenter de deplacer 1 particule 
     
     // Tableaux
     double initial_position[D]; // stockage de la position avant deplacement
@@ -95,6 +103,7 @@ int main()
     // Variables pour statistiques
     double Ep_i = 0., Ep_f = 0.; // pour comparaison des energies
     double Ep_moy = 0.; // Pour moyenne de Ep sur un cycle de MC
+    double P_moy = 0.; // Pour moyenne de P sur un cycle MC 
     double nb_displacement_accepted = 0; // compte les acceptations
     double nb_total_attemps = N*N_particules; // N_particules tentatives par cycle de MC
     
@@ -130,25 +139,22 @@ int main()
     	for(int j = 0; j < N_particules; j++)
     	{
 			// Calcul energie potentielle totale initiale
-			for(int k = 0; k < N_particules-1; k++)
+			for(int k = 0; k < N_particules; k++)
 			{
 				for(int l = k+1; l < N_particules; l++)
 				{
-					Ep_i += compute_Ep(pos[k], pos[l])/2;
-					/*
-					if(i == 0 && j == 0)
-					{
-						printf("Ep_i = %f\n", Ep_i);
-					}
-					*/
+					Ep_i += compute_Ep(pos[k], pos[l]);
 				}
 			}
-			
+		
+			Ep_f = Ep_i;
+			/*
 			// Ecriture energie initiale
 			if(i == 0 && j == 0)
 			{
 				fprintf(fp, "# E_initiale = %f\n\n", Ep_i);
 			}
+			*/
 			
 			// Choix au hasard de la particule a deplacer
 			selection = (int) rand() % N_particules;
@@ -164,52 +170,48 @@ int main()
 			pos[selection][0] += dx;
 			pos[selection][1] += dy;
 			
-			// Calcul de l'energie potentielle totale suite au deplacement
-			for(int k = 0; k < N_particules-1; k++)
+			// On retire les contributions de la particule selectionnee avant deplacement
+			for(int k = 0; k < N_particules; k++)
 			{
-				for(int l = k+1; l < N_particules; l++)
+				if(k != selection)
 				{
-					Ep_f += compute_Ep(pos[k], pos[l])/2;
+					Ep_f += (compute_Ep(pos[selection], pos[k]) - compute_Ep(initial_position, pos[k]) );
 				}
 			}
 			
-			printf("%f	%f\n", Ep_i, Ep_f);
-			
 			// Calcul probabilité d'acceptation
-			compute_probability(Ep_f, Ep_i, P_tentative, &P);
+			compute_probability(Ep_i, Ep_f, P_tentative, &P);
 			
 			// Validation ou non du deplacement
-			//printf("P = %f, ", P);
 			validation(P, Ep_i, Ep_f, &nb_displacement_accepted, &Ep_moy, pos[selection], initial_position);
 			
-			// Remise a 0 de Ep_i et Ep_f pour tentaive suivante
+			// Ajout de la pression de ce tour a la pression totale (Theoreme du Viriel)
+			P_moy += ( N_particules*K_B*T + (compute_sum_products(pos)/N_particules)/D ) / V;
+			
+			// Remise a 0 de Ep_i, Ep_f et Ep_cpt pour tentaive suivante
 			Ep_i = 0;
 			Ep_f = 0;
-			
-			
-			// Ecriture configuration
-			for(int i =0; i < N_particules; i++)
-			{
-				fprintf(fptr, "%f	%f\n", pos[i][0], pos[i][1]);
-			}
-			fprintf(fptr, "\n\n");
-			
     	}
-    	/*
+    	
     	// Ecriture configuration apres chaque cycle MC
 		for(int i =0; i < N_particules; i++)
 		{
 			fprintf(fptr, "%f	%f\n", pos[i][0], pos[i][1]);
 		}
 		fprintf(fptr, "\n\n");
-    	*/
     	
-    	// Ecriture de Ep_moy dans fichier
+    	//printf("%f\n", P_moy);
+    	
+    	// Calcul de Ep_moy et P_moy
     	Ep_moy /= N_particules;
-    	fprintf(fp, "%d	%f\n", i+1, Ep_moy);
+    	P_moy /= N_particules;
     	
-    	// Remise a 0 de Ep_i et Ep_f
+    	// Ecriture dans le fichiers de sortie
+    	fprintf(fp, " %d\t%f\t%f\n", i+1, Ep_moy, P_moy);
+    	
+    	// Remise a 0 de Ep_moy et P_moy
     	Ep_moy = 0;
+    	P_moy = 0;
     }
     
     
@@ -218,7 +220,7 @@ int main()
     fclose(fptr); 
     fclose(fp);
     
-    printf("\n\n Nombre de tentatives de déplacements acceptées : %f\n Nombre total de tentatives (Nombre de particules * Nombre de cycles MC) : %f \n Pourcentage de déplacements acceptés : %f \n\n", nb_displacement_accepted, nb_total_attemps, (nb_displacement_accepted/nb_total_attemps) * 100);
+    printf("\n\n Nombre de tentatives de déplacements acceptées : %f\n Nombre total de tentatives (Nombre de particules * Nombre de cycles MC) : %f \n Pourcentage de déplacements acceptés : %f pourcents \n\n", nb_displacement_accepted, nb_total_attemps, (nb_displacement_accepted/nb_total_attemps) * 100);
     
 	printf("\n\nFin de simulation\n");
 	
@@ -251,8 +253,8 @@ void create_squared_crystal(double pos[N_particules][D])
        		cpt += 1;
        		
        		// coordonnees de la particule
-            x = Rcut + (double) i * dl;
-            y = Rcut + (double) j * dl;
+            x = edge_distance + (double) i * dl;
+            y = edge_distance + (double) j * dl;
             
             // Ecriture positions dans pos
             pos[cpt-1][0] = x;
@@ -274,32 +276,35 @@ double compute_Ep(double P[D], double M[D])
 	// Application des conditions aux limites periodiques
 	
 	// Selon x
-	if(M[0]-P[0] >= half_box)
+	if(M[0]-P[0] > half_box)
 	{
 		xp += L;
 	}
-	else if(M[0]-P[0] < half_box)
+	else if(M[0]-P[0] < -half_box)
 	{
 		xp -= L;
 	}
+	
 	// Selon y
-	if(M[1]-P[1] >= half_box)
+	if(M[1]-P[1] > half_box)
 	{
 		yp += L;
 	}
-	else if(M[1]-P[1] < half_box)
+	else if(M[1]-P[1] < -half_box)
 	{
 		yp -= L;
 	}
+	
 	
 	// Calcul de la distance r entre les deux particules
 	r = sqrt((M[0]-xp)*(M[0]-xp) + (M[1]-yp)*(M[1]-yp));
 	//printf("%f\n", r);
 	
-	// Lennaard_Jones tronque-decale
+	// Lennard_Jones tronque-decale
 	if(r < Rcut)
 	{
 		Ep =  4*epsilon*pow(sigma/r, 12) - 4*epsilon*pow(sigma/r, 6) - Ucut;
+		//printf("%f\n", Ep);
 	}
 	
 	return Ep;
@@ -346,7 +351,7 @@ void displacement(double x, double y, double *dx, double *dy, double norm)
 }
 
 // Calcul probabilite du deplacement envisage
-void compute_probability(double E_initial, double E_final, double T, double *P)
+void compute_probability(double E_initial, double E_final, double P_tentative, double *P)
 {
 	if (E_final < E_initial)
 	{
@@ -354,7 +359,7 @@ void compute_probability(double E_initial, double E_final, double T, double *P)
 	}
 	else
 	{
-		*P = T * exp( -(E_final-E_initial) / (K_B*T) );
+		*P = P_tentative * exp( -( (E_final-E_initial) / (K_B*T) ) );
 	}
 }
 
@@ -363,7 +368,6 @@ void validation(double P, double E_initial, double E_final, double *nb_displacem
 {
 	// nombre entre 0 et 1
 	float coeff = ((float) (rand() % 100) + 1.) / 100;
-	//printf("coeff = %f\n", coeff);
 			
 	if(coeff > P)
 	{
@@ -380,5 +384,68 @@ void validation(double P, double E_initial, double E_final, double *nb_displacem
 		// Ajout de Ep_f a E_moy
 		*E_moy += E_final; 
 	}
+}
+
+// Calcule la somme des produits entre forces et distances entre particules
+double compute_sum_products(double pos[N_particules][D])
+{
+	double sum = 0; // Somme des produits scalaires
+	double rij; // Distance entre deux particules
+	double Fx, Fy; // Composantes de la force entre i et j
+	double xj, yj; // Pour les PBC
+	
+	for(int i = 0; i < N_particules; i++)
+	{
+		for(int j = i+1; j < N_particules; j++)
+		{
+			xj = pos[j][0];
+			yj = pos[j][1];
+			//printf("%f, %f\n", xj, yj);
+			
+			
+			// Application des conditions aux limites periodiques
+	
+			// Selon x
+			if(pos[j][0]-pos[i][0] > half_box)
+			{
+				xj += L;
+			}
+			else if(pos[j][0]-pos[i][0] < -half_box)
+			{
+				xj -= L;
+			}
+			
+			// Selon y
+			if(pos[j][1]-pos[i][1] > half_box)
+			{
+				yj += L;
+			}
+			else if(pos[j][1]-pos[i][1] < -half_box)
+			{
+				yj -= L;
+			}
+			
+			
+			// Calcul de la distance entre les particules
+			rij = sqrt( (xj-pos[i][0])*(xj-pos[i][0]) + (yj-pos[i][1])*(yj-pos[i][1]) );
+			//printf("%f\n", rij);
+			
+			if(rij < Rcut)
+			{
+				// Calcul des composantes de la force entre i et j
+				Fx = ( 24*epsilon*( 2*pow(sigma/rij, 12) - pow(sigma/rij, 6) ) * (xj-pos[i][0]) ) / (rij*rij);
+				Fy = ( 24*epsilon*( 2*pow(sigma/rij, 12) - pow(sigma/rij, 6) ) * (yj-pos[i][1]) ) / (rij*rij);
+				//printf("%f, %f\n", Fx, Fy);
+				
+				// Ajout du produit F*rij a la somme totale
+				sum += Fx*(xj-pos[i][0]) + Fy*(yj-pos[i][1]);
+				//printf("%f\n", sum);
+			}
+			
+		}
+	}
+	
+	//printf("%f\n", sum);
+	return sum;
 }
 

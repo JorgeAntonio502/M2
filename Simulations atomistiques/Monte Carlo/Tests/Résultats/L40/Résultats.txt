@@ -1,0 +1,15 @@
+Paramètres : 
+
+nombre de cycles MC : 5000
+Temperature : 0.01
+Proba de tenter : 1.
+distance aux bords : dl/2, dl = L/N_particules
+norm = 0.1
+pourcentage accepté : 23.6852 %
+
+nombre de cycles MC : 5000
+Temperature : 10
+Proba de tenter : 1.
+distance aux bords : dl/2, dl = L/N_particules
+norm = 0.1
+pourcentage accepté : 98.86 %

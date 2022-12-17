@@ -1,2 +1,2 @@
 Fichiers de données utilisées pour les figures
-ouvrir "plot.gnu" depuis gnuplot
+ouvrir "plot-300K.gnu" depuis gnuplot

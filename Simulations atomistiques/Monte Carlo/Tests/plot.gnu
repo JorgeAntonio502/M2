@@ -6,8 +6,8 @@ set term gif animate delay 4 font "Courrier, 11"
 set output 'MC.gif'
 #set output 'MC.png'
 # The plot
-set xrange [0:9 + 4]
-set yrange [0:9 + 4]
+set xrange [0 : 20]
+set yrange [0 : 20]
 set tics nomirror
 set xlabel "x"
 set ylabel "y"
@@ -23,10 +23,23 @@ unset xrange
 unset yrange
 set terminal png
 set output "Ep_MC.png"
-stats "Potential_Energy.txt" name 'B'
+stats "Physical_quantities.txt" name 'B'
 set xrange [1: B_max_x]
 set xlabel "Monte-Carlo Cycle"
 set ylabel "Mean Potential Energy"
 set key top right box
 set key font "Arial, 14"
-plot "Potential_Energy.txt" title "Mean Ep per MC cycle" w l
+plot "Physical_quantities.txt" title "Mean Ep per MC cycle" w l
+
+# The P plot :
+unset xrange
+unset yrange
+set terminal png
+set output "Pressure_MC.png"
+stats "Physical_quantities.txt" using 1:3 name 'C'
+set xrange [1: C_max_x]
+set xlabel "Monte-Carlo Cycle"
+set ylabel "Mean Pressure"
+set key top right box
+set key font "Arial, 14"
+plot "Physical_quantities.txt" using 1:3 title "Mean Pressure per MC cycle" w l
