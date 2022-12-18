@@ -27,7 +27,7 @@ double cristal_width = sqrt(N_particules); // Nombre d'atomes le long du cristal
 double dl = L/cristal_width; // Espacement initial entre les particules
 double edge_distance = dl/2; // Distance initiale du cristal aux bords de la boîte
 double half_box = L/2;
-float T = 1e-10; // Température en Kelvins
+float T = 3.; // Température en Kelvins
 
 
 
@@ -87,7 +87,7 @@ int main()
 	
 	// Declaration constantes
     double V = L*L;
-    float norm = 1.; // Longueur max des deplacements selon x et y
+    float norm = 0.5; // Longueur max des deplacements selon x et y
     float P_tentative = 1.;///N_particules; // Proba de tenter de deplacer 1 particule 
     
     // Tableaux
@@ -186,7 +186,7 @@ int main()
 			validation(P, Ep_i, Ep_f, &nb_displacement_accepted, &Ep_moy, pos[selection], initial_position);
 			
 			// Ajout de la pression de ce tour a la pression totale (Theoreme du Viriel)
-			//P_moy += ( N_particules*K_B*T + (compute_sum_products(pos)/N_particules)/D ) / V;
+			P_moy += ( N_particules*K_B*T + (compute_sum_products(pos)/N_particules)/D ) / V;
 			
 			// Remise a 0 de Ep_i, Ep_f et Ep_cpt pour tentaive suivante
 			Ep_i = 0;
