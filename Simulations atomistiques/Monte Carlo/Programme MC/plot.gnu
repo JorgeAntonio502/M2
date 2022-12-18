@@ -6,8 +6,8 @@ set term gif animate delay 4 font "Courrier, 11"
 set output 'MC.gif'
 #set output 'MC.png'
 # The plot
-set xrange [0 : 10]
-set yrange [0 : 10]
+set xrange [0 : 9.3]
+set yrange [0 : 9.3]
 set tics nomirror
 set xlabel "x"
 set ylabel "y"

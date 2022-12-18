@@ -132,7 +132,7 @@ int main()
     
 	// Boucle principale de la simulation :
     printf("Début METROPOLIS\n\n");
-	printf("  Pourcentage de calculs effectués:\n  [");
+	printf("  Progression :\n  [");
 
     int tenp = floor(N/10); 		// variable qui servira à montrer la progression des calculs
     // Parcours des N cycles MC
@@ -195,14 +195,14 @@ int main()
 			Ep_i = 0;
 			Ep_f = 0;
     	}
-    	/*
+    	
     	// Ecriture configuration apres chaque cycle MC
 		for(int n = 0; n < N_particules; n++)
 		{
 			fprintf(fptr, "%f	%f\n", pos[n][0], pos[n][1]);
 		}
 		fprintf(fptr, "\n\n");
-    	*/
+    	
     	
     	//printf("%f\n", P_moy);
     	
