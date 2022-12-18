@@ -1,7 +1,0 @@
-Paramètres : 
-
-nombre de cycles MC : 2000
-largeur cristal : 8
-distance aux bords : 1
-norm = 0.0035
-pourcentage accepté : 22.71 %
