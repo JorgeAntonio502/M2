@@ -14,7 +14,7 @@ float K_B = 1.;//1.380649e-23;
 
 // Constantes
 const int D = 2; // Dimension du problème
-const int N = 3000;  // Nombre de cycles de MC
+const int N = 2000;  // Nombre de cycles de MC
 const int N_particules = 100; // Nombre de particules
 
 // Rayon et energie de coupure
@@ -22,13 +22,13 @@ double Rcut = 2.5;
 double Ucut = 4*epsilon*pow(sigma/Rcut, 12) - 4*epsilon*pow(sigma/Rcut, 6);
 
 // Parametres cristal
-double L = 10.8;
+double L = 40;
 double rho = (double) N_particules/ (L*L);
 double cristal_width = sqrt(N_particules); // Nombre d'atomes le long du cristal
 double dl = L/cristal_width; // Espacement initial entre les particules
 double edge_distance = dl/2; // Distance initiale du cristal aux bords de la boîte
 double half_box = L/2;
-float T = 0.05; // Température en Kelvins
+float T = 0.7; // Température en Kelvins
 
 
 
@@ -88,7 +88,7 @@ int main()
 	
 	// Declaration constantes
     double S = L*L;
-    float norm = 0.05; // Longueur max des deplacements selon x et y
+    float norm = 1.; // Longueur max des deplacements selon x et y
     float P_tentative = 1.;///N_particules; // Proba de tenter de deplacer 1 particule 
     
     // Tableaux
@@ -196,13 +196,14 @@ int main()
 			Ep_f = 0;
     	}
     	
+    	/*
     	// Ecriture configuration apres chaque cycle MC
 		for(int n = 0; n < N_particules; n++)
 		{
 			fprintf(fptr, "%f	%f\n", pos[n][0], pos[n][1]);
 		}
 		fprintf(fptr, "\n\n");
-    	
+    	*/
     	
     	//printf("%f\n", P_moy);
     	
