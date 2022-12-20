@@ -1,0 +1,103 @@
+1) 
+	exécution : 10 secondes
+
+
+3) 
+Saxpy() :
+
+	!$OMP PARALLEL DO
+    do i=1,size(x,2)
+       z(:,i) = a*x(:,i) + y
+    end do
+    !$OMP end PARALLEL DO
+    
+	Sans openmp : 16 secondes
+
+	Avec openmp et avec 4 threads : 23 secondes
+	
+	=> Inefficace.
+	
+saxpy_vector() :
+
+	!$OMP  PARALLEL WORKSHARE
+    z = a*x + y
+    !$OMP END  PARALLEL WORKSHARE
+    
+    Sans openmp : 14 secondes
+
+	Avec openmp et avec 4 threads : 20 secondes
+	
+	=> Inefficace.
+	
+saxpy_vector_slice() :
+	
+	!$OMP  PARALLEL WORKSHARE
+    z(:,:) = a*x(:,:) + y
+    !$OMP END  PARALLEL WORKSHARE
+    
+    Sans openmp : 14 secondes
+
+	Avec openmp et avec 4 threads : 20 secondes
+	
+	=> Inefficace.
+	
+
+4) Comparaison parallèlisé et non-par (Evolve seulement)
+
+	502 particules :
+		Code "md-f90" : 10.5 secondes
+		
+		Code "md-par.f90" avec flag "-fopenmp" :
+			2 thread : 10 secondes et résultats inchangés 
+			
+			3 thread : 10 secondes et résultats inchangés
+			
+			4 thread : 12 secondes et résultats inchangés
+			
+			5 thread : 10 secondes et résultats inchangés
+			
+	4096 particules :
+		Code "md-f90" : 57 secondes
+		
+		Code "md-par.f90" avec flag "-fopenmp" :
+			2 thread : 56s et résultats inchangés 
+			
+			3 thread : 55s et résultats inchangés
+			
+			4 thread : 58s et résultats inchangés
+			
+			5 thread : 1m 6s et résultats inchangés
+
+	
+5) Comparaison non parallèlisé et parralélisé. (Evolve et Forces))
+
+	502 particules, 2000 pas :
+
+		Code "md-f90" : 10.5 secondes
+
+		Code "md-par.f90" avec flag "-fopenmp" :
+			- 2 threads : 12 secondes et résultats inchangés pour premières valeurs, puis se différencies plus les itérations augmentent (ordre inférieur à 10-2)
+			
+			- 3 threads : 11 secondes et résultats inchangés pour premières valeurs, puis se différencies plus les itérations augmentent (ordre inférieur à 10-1)
+			
+			- 4 threads : 11 secondes et résultats inchangés pour premières valeurs, puis se différencies plus les itérations augmentent (ordre inférieur à 10-1)
+			
+			- 5 threads : 11 secondes et résultats inchangés pour premières valeurs, puis se différencies plus les itérations augmentent (ordre inférieur à 10-1)
+		
+		=> Inefficace d'un point de vue temps de calcul. Les résultats sont légèrement influencés à long terme. Faire attention au nombre d'itérations que l'on veut faire, pourraient être fausses si on attend trop longtemps.
+		
+	4096 particules, 200 pas :
+	
+		Code "md-f90" : 57 secondes
+		
+		Code "md-par.f90" avec flag "-fopenmp" :
+			- 2 threads : 1m 5s et résultats inchangés
+			
+			- 3 threads : 1 minute et résultats inchangés
+			
+			- 4 threads : 1 minute et résultats inchangés
+			
+			- 5 threads : 56 secondes et résultats 
+	
+	=> Inefficace d'un point de vue temps de calcul. Les résultats ne sont pas influencés à court terme. Si plus d'itération, sûrement.
+	
