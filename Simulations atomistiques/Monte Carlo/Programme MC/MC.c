@@ -23,12 +23,12 @@ double Ucut = 4*epsilon*pow(sigma/Rcut, 12) - 4*epsilon*pow(sigma/Rcut, 6);
 
 // Parametres cristal
 double L = 40;
-double rho = (double) N_particules/ (L*L);
+double rho = (double) N_particules/ (L*L); // Densité
 double cristal_width = sqrt(N_particules); // Nombre d'atomes le long du cristal
 double dl = L/cristal_width; // Espacement initial entre les particules
 double edge_distance = dl/2; // Distance initiale du cristal aux bords de la boîte
 double half_box = L/2;
-float T = 0.7; // Température en Kelvins
+float T = 0.01; // Température en Kelvins
 
 
 
@@ -62,9 +62,12 @@ Fonction principale
 #########################*/
 int main()
 {
+	// Variable pour afficher la progression des calculs
+    int tenp = floor(N/10);
+    
 	// Initialisation fichiers pour positions et grandeurs mesurees
     FILE *fptr;    // positions
-    FILE *fp;      // Ep
+    FILE *fp;      // Ep et P
     
     fptr = fopen("Positions.txt", "w");
 
@@ -87,7 +90,7 @@ int main()
 	printf("\nL = %f, N_particules = %d, rho = %f\n\n", L, N_particules, rho);
 	
 	// Declaration constantes
-    double S = L*L;
+    double S = L*L; // "Volume" en 2D
     float norm = 1.; // Longueur max des deplacements selon x et y
     float P_tentative = 1.;///N_particules; // Proba de tenter de deplacer 1 particule 
     
@@ -96,7 +99,6 @@ int main()
     double pos[N_particules][D]; // tableau des positions
     
     // Variables
-    double x, y; // Pour placement des particules
     double dx = 0, dy = 0; // deplacements selon x et y
     double P; // probabilite de conserver le deplacement
     int selection; // indice de la particule selectionnee
@@ -111,7 +113,7 @@ int main()
     // RNG (module rand())
     time_t t;
     srand((unsigned) time(&t));
-    
+
     
     
     
@@ -128,13 +130,12 @@ int main()
 	fprintf(fptr, "\n\n");
 	
 	
+	
    
-    
 	// Boucle principale de la simulation :
     printf("Début METROPOLIS\n\n");
 	printf("  Progression :\n  [");
-
-    int tenp = floor(N/10); 		// variable qui servira à montrer la progression des calculs
+     		
     // Parcours des N cycles MC
     for(int i = 0; i < N; i++) 
     {
@@ -151,13 +152,6 @@ int main()
 			}
 		
 			Ep_f = Ep_i;
-			/*
-			// Ecriture energie initiale
-			if(i == 0 && j == 0)
-			{
-				fprintf(fp, "# E_initiale = %f\n\n", Ep_i);
-			}
-			*/
 			
 			// Choix au hasard de la particule a deplacer
 			selection = (int) rand() % N_particules;
@@ -189,23 +183,19 @@ int main()
 			validation(P, Ep_i, Ep_f, &nb_displacement_accepted, &Ep_moy, pos[selection], initial_position);
 			
 			// Ajout de la pression de ce tour a la pression totale (Theoreme du Viriel)
-			//P_moy += ( N_particules*K_B*T + (compute_sum_products(pos)/N_particules)/D ) / S;
+			P_moy += ( N_particules*K_B*T + (compute_sum_products(pos)/N_particules)/D ) / S;
 			
 			// Remise a 0 de Ep_i, Ep_f et Ep_cpt pour tentative suivante
 			Ep_i = 0;
 			Ep_f = 0;
     	}
     	
-    	/*
     	// Ecriture configuration apres chaque cycle MC
 		for(int n = 0; n < N_particules; n++)
 		{
 			fprintf(fptr, "%f	%f\n", pos[n][0], pos[n][1]);
 		}
 		fprintf(fptr, "\n\n");
-    	*/
-    	
-    	//printf("%f\n", P_moy);
     	
     	// Calcul de Ep_moy et P_moy
     	Ep_moy /= N_particules;
@@ -251,7 +241,7 @@ int main()
 Codes des differentes fonctions
 #############################*/
 
-// Fonction min() pour METROPOLIS
+// Fonction min()
 double min(double a, double b)
 {
 	return (a > b) ? b : a;
@@ -316,13 +306,11 @@ double compute_Ep(double P[D], double M[D])
 	
 	// Calcul de la distance r entre les deux particules
 	r = sqrt((M[0]-xp)*(M[0]-xp) + (M[1]-yp)*(M[1]-yp));
-	//printf("%f\n", r);
 	
 	// Lennard_Jones tronque-decale
 	if(r < Rcut)
 	{
 		Ep =  4*epsilon*(pow(sigma/r, 12) - pow(sigma/r, 6)) - Ucut;
-		//printf("%f\n", Ep);
 	}
 	
 	return Ep;
@@ -419,11 +407,8 @@ double compute_sum_products(double pos[N_particules][D])
 		{
 			xj = pos[j][0];
 			yj = pos[j][1];
-			//printf("%f, %f\n", xj, yj);
-			
 			
 			// Application des conditions aux limites periodiques
-	
 			// Selon x
 			if(pos[j][0]-pos[i][0] > half_box)
 			{
@@ -444,27 +429,22 @@ double compute_sum_products(double pos[N_particules][D])
 				yj -= L;
 			}
 			
-			
 			// Calcul de la distance entre les particules
 			rij = sqrt( (xj-pos[i][0])*(xj-pos[i][0]) + (yj-pos[i][1])*(yj-pos[i][1]) );
-			//printf("%f\n", rij);
 			
 			if(rij < Rcut)
 			{
 				// Calcul des composantes de la force entre i et j
 				Fx = ( 24*epsilon*( 2*pow(sigma/rij, 12) - pow(sigma/rij, 6) ) * (xj-pos[i][0]) ) / (rij*rij);
 				Fy = ( 24*epsilon*( 2*pow(sigma/rij, 12) - pow(sigma/rij, 6) ) * (yj-pos[i][1]) ) / (rij*rij);
-				//printf("%f, %f\n", Fx, Fy);
 				
 				// Ajout du produit F*rij a la somme totale
 				sum += Fx*(xj-pos[i][0]) + Fy*(yj-pos[i][1]);
-				//printf("%f\n", sum);
 			}
 			
 		}
 	}
 	
-	//printf("%f\n", sum);
 	return sum;
 }
 
