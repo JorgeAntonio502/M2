@@ -1,14 +1,14 @@
-clear 
+clear
 
 % Constantes du probleme
-eps_r = 12;
+eps_r = 3;
 mu_r = 1;
 nu_r = sqrt(eps_r*mu_r);
 lambda = 2;
 R = 1;
 k_0 = 2*pi/lambda;
 
-% angle d'incidence de l'onde 
+% angle d'incidence de l'onde
 phi = 0;
 
 % Ordre des sommes a calculer
@@ -25,15 +25,15 @@ g = 0;
 
 % Debut iterations
 for j = 1:length(Theta)
-	
+
 	% Calcul de la somme g(theta) pour le theta courant
 	for n = -N_ordre:N_ordre
 		g = g + ( compute_sn(n, k_0*R, phi, nu_r) * (-1i)^n * exp(1i*n*Theta(j)) );
 	end
-	
+
 	G(j) = g;
 	g = 0;
-	
+
 end
 
 polar(Theta, G)
