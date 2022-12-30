@@ -1,29 +1,7 @@
 clear
 
-%{
-	- Le champ total est la somme du champ interieur au cylindre et du champ exterieur au cylindre :
-	 u_tot = u_int + u_ext
-
-	- Le champ exterieur est lui-meme defini comme la somme des champs incident et diffractes :
-	 u_ext = u_inc + u_diff
-
-	- Les expressions des champs interieur et diffracte sont :
-	u_int = sum(dn.*besselj(n, k_0 * Z_r * r) .* exp(i * n .* theta))
-	u_diff = sum(sn.*besselh(k_0*r) .* exp(i * n * theta))
-
-	Methode generale :
-	- Calculer l'ordre n a garder
-	- Definir dimensions d'espace
-	- Definir la zone du cylindre
-	- Definir le champ incident u_inc = exp(i*k_0*r.*sin(phi-theta))
-	- Calculer le champ interieur (sur tout l'espace)
-	- Calculer le champ exterieur (sur tout l'espace)
-	- Deduire le champ total (sur tout l'espace)
-	- Tracer
-%}
-
 % Constantes du probleme
-eps_r = 12;
+eps_r = 1e5;
 mu_r = 1;
 nu_r = sqrt(eps_r*mu_r);
 lambda = 2;
@@ -79,31 +57,28 @@ u_ext = u_diff + u_inc;
 % Calcul de l'onde resultante finale
 u_final = flag.*u_int + ~flag.*u_ext;
 
+%{
+  Expression Poynting : P = (1/mu_r) * Im( conj(u) * diff(u) );
+%}
 
-subplot(221), pcolor(x, y, real(u_inc));
+%Calcul de la différentielle de u
+Nabla_u = diff(u_final);
+
+% Ajustement dimension de u_final pour correspondre à diff(u_final)
+u_final(length(u_final), :) = [];
+
+% Calcul du vecteur de poynting
+poynting = (1/mu_r) * imag(conj(u_final) .* Nabla_u);
+
+% Ajustement des dimensions pour correspondre à poynting
+x(length(x), :) = [];
+y(length(y), :) = [];
+
+% Tracé vecteur de Poynting
+surf(x, y, abs(poynting));
 xlabel("x")
 ylabel("y")
-title("Champ incident")
+title("Vecteur de poynting")
 colorbar
 shading flat
 
-subplot(222), pcolor(x, y, real(flag.*u_int));
-xlabel("x")
-ylabel("y")
-title("Champ intérieur")
-colorbar
-shading flat
-
-subplot(223), pcolor(x, y, real(~flag.*u_ext));
-xlabel("x")
-ylabel("y")
-title("Champ extérieur")
-colorbar
-shading flat
-
-subplot(224), pcolor(x, y, real(u_final));
-xlabel("x")
-ylabel("y")
-title("Champ total")
-colorbar
-shading flat

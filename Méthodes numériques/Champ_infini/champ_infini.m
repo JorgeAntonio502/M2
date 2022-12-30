@@ -4,7 +4,7 @@ clear
 eps_r = 3;
 mu_r = 1;
 nu_r = sqrt(eps_r*mu_r);
-lambda = 2;
+lambda = 15;
 R = 1;
 k_0 = 2*pi/lambda;
 
@@ -36,7 +36,19 @@ for j = 1:length(Theta)
 
 end
 
-polar(Theta, G)
+
+polar(Theta, abs(G))
+xlabel("theta")
+ylabel("abs(E inf)")
+
+%{
+subplot(2, 1 , 1), polar(Theta, G)
 xlabel("theta")
 ylabel("E inf")
 title("Champ à l'infini en fonction de theta")
+
+subplot(2, 1 , 2), polar(Theta, abs(G))
+xlabel("theta")
+ylabel("abs(E inf)")
+title("Valeur abolue du champ à l'infini en fonction de theta")
+}%

@@ -16,16 +16,16 @@ x = linspace(0, 50, 1000);
 % Affichage
 subplot(4, 1, 1), plot(x, f(x), x, x/q0) % subplot(nombre de plots, nombre de lignes, numéro de plot)
 xlabel("k/2")
-ylabel("|cos(k/2)| && tan(k/2) > 0") 
+ylabel("|cos(k/2)| && tan(k/2) > 0")
 
 subplot(4, 1, 2), plot(x, g(x), x, x/q0)
 xlabel("k/2")
-ylabel("|sin(k/2)| && cotan(k/2) < 0") 
+ylabel("|sin(k/2)| && cotan(k/2) < 0")
 
 % Création des seeds
 seed1 = [2] ; qmod1 = fsolve(ff, seed1); Emod1b = qmod1.^2/pi^2;
 E1SA = Emod1b*E0;
-seed2 = [5] ; qmod2 = fsolve(gg, seed2); Emod2b = qmod2.^2/pi^2; 
+seed2 = [5] ; qmod2 = fsolve(gg, seed2); Emod2b = qmod2.^2/pi^2;
 E2SA = Emod2b*E0;
 
 %------- Verif Methode
@@ -40,7 +40,7 @@ for p = 1:length(NN)
 	delt = Lb/N;
 	xb = -Lb/2 + Lb/N * (0:N);
 	vn = Vb*(abs(xb) > 0.5);
-	
+
 	nmodes = 2;
 	options.disp = 0;
 	ee = ones(N+1, 1);
@@ -49,7 +49,7 @@ for p = 1:length(NN)
 	[psi, En] = eigs(A, nmodes, 'sm', options);
 	EEn(:,p) = E0*sort(diag(En));
 	% sort() permet d'assurer que les deux premières lignes soient bien les deux premiers modes
-	
+
 end
 
 %% ---------- Tracé dérivée analytique et approximation
@@ -71,13 +71,13 @@ VA = 1;
 VB = 0.5;
 w = 1;
 
-x = linspace(-3, 3, 1e3); 
+x = linspace(-3, 3, 1e3);
 
 
 %% ---------- Sparse matrix et convergence profil lisse
 VA = Vb;
 VB = 0;
-w = 1; 
+w = 1;
 
 nmodes = 3;
 options.disp =0;
@@ -102,7 +102,7 @@ for p = 1:length(NN)
 	[psi, En] = eigs(A, nmodes, 'sm', options);
 	EEn(:,p) = sort(diag(En));
 	% sort() permet d'assurer que les deux premières lignes soient bien les deux premiers modes
-	
+
 end
 
 subplot(4, 1, 4), plot(NN, EEn, 'Linewidth', 2)
@@ -110,7 +110,7 @@ subplot(4, 1, 4), plot(NN, EEn, 'Linewidth', 2)
 %% ---------- Sparse matrix et convergence en fonction du paramètre profil lisse
 VA = Vb;
 VB = 0;
-w = 1; 
+w = 1;
 
 nmodes = 3;
 options.disp = 0;
@@ -132,7 +132,7 @@ for n = 1:nmax
 	[psi, En] = eigs(A, nmodes, 'sm', options);
 	EEn(:,p) = sort(diag(En));
 	% sort() permet d'assurer que les deux premières lignes soient bien les deux premiers modes
-	
+
 end
 
 subplot(4, 1, 4), plot(1:nmax, EEn, 'Linewidth', 2)
