@@ -2,26 +2,28 @@ clear all
 close all
 clc
 
-% Taille de l'image
-n = 300;
-m = 600;
-
-% Pas de teinte sur les dix niveaux
-nb_teintes = 10;
-d_teintes = 255/nb_teintes;
-dx = int8(n/nb_teintes);
-
-% Boucle de création du dégradé
-for i = 1:n
-  for j = 1:m
-    if i >
+% Dégradé de gris
+for i = 1:200
+  for k = 1:10
+    for j = 50*(k-1)+1:k*50
+      B(i,j) = uint8((k-1)/9*250.0);
     end
-    B(i, j, 1) = i*d_teintes;
-    B(i, j, 2) = 0;
-    B(i, j, 3) = 0;
   end
 end
 
-B = uint8(B);
-imshow(B);
+subplot(211), imshow(B)
+
+% dégradé de rouge
+for i = 1:200
+  for k = 1:10
+    for j = 50*(k-1)+1:k*50
+      B(i,j, 1) = 255;
+      B(i,j, 2) = uint8((k-1)/9*255.0);
+      B(i,j, 3) = uint8((k-1)/9*255.0);
+    end
+  end
+end
+
+subplot(212), imshow(B)
+
 

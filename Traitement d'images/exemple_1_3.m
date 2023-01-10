@@ -24,24 +24,28 @@ B(50:100, 50:100, 3) = 0;
 A = uint8(A);
 B = uint8(B);
 
+%{
 % Canal rouge
 subplot(311), imshow(B(:, :, 1))
 % Canal vert
 subplot(312), imshow(B(:, :, 2))
 % Canal bleu
 subplot(313), imshow(B(:, :, 3))
+%}
 
 % Canal rouge dans canal vert et vert dans rouge
 % Copie canal vert de A dans C temporaire
-C(:,:,2) = A(:,:,2);
+C = A(:,:,2);
 % Copie canal rouge de A dans canal vert de A
 A(:,:,2) = A(:,:,1);
 % Copie canal vert de C dans canal rouge de A
-A(:,:,1) = C(:,:,2);
+A(:,:,1) = C;
 
 % Permutation circulaire
 
 imshow(A)
+
+
 
 
 
